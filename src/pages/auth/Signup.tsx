@@ -106,7 +106,7 @@ export default function Signup() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                placeholder="Priya Sharma"
+                placeholder="Satya Nadella"
                 className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
                 style={{
                   backgroundColor: '#0D0D12',
