@@ -6,7 +6,8 @@
       "Bash(bunx tsc:*)",
       "Bash(timeout 15 bun run dev)",
       "Bash(gh repo:*)",
-      "Bash(where gh:*)"
+      "Bash(where gh:*)",
+      "Bash(bun run:*)"
     ]
   }
 }

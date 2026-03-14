@@ -2,56 +2,68 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import { useAuth } from '@/lib/auth'
-import { fetchSessionByCode, joinSession, buildGuestState } from '@/hooks/useSession'
+import {
+  fetchSessionByCode,
+  joinSession,
+  buildGuestState,
+} from '@/hooks/useSession'
 
 export default function JoinSession() {
-  const { user, setGuestSession, guestState } = useAuth()
+  const { guestState, user, setGuestSession } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
-  const [code, setCode] = useState(searchParams.get('code') ?? '')
+  const [code, setCode] = useState('')
   const [nickname, setNickname] = useState('')
-  const [error, setError] = useState<string | null>(null)
   const [joining, setJoining] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // If already in a session (guest state), offer to rejoin
-  const hasExistingSession = !!guestState
-
-  // Auto-join if ?code= param and user is authenticated
+  // Pre-fill code from QR scan URL param
   useEffect(() => {
-    const autoCode = searchParams.get('code')
-    if (autoCode && user) {
-      setCode(autoCode)
+    const qrCode = searchParams.get('code')
+    if (qrCode) {
+      setCode(qrCode.toUpperCase().trim())
     }
-  }, [searchParams, user])
+  }, [searchParams])
+
+  // If guest already has a session, offer to rejoin
+  useEffect(() => {
+    if (guestState?.sessionId) {
+      // Automatically redirect to their active session
+      navigate(`/student/session/${guestState.sessionId}`, { replace: true })
+    }
+  }, [guestState, navigate])
 
   async function handleJoin(e: FormEvent) {
     e.preventDefault()
+    if (joining) return
     setError(null)
-
-    const trimmedCode = code.trim().toUpperCase()
-    if (!trimmedCode) {
-      setError('Please enter a session code.')
-      return
-    }
-
-    const displayName = user?.name ?? nickname.trim()
-    if (!displayName) {
-      setError('Please enter a nickname.')
-      return
-    }
-
     setJoining(true)
 
-    // 1. Validate session code
-    const { session, error: sessionErr } = await fetchSessionByCode(trimmedCode)
-    if (sessionErr || !session) {
-      setError(sessionErr ?? 'Session not found.')
+    const trimmedCode = code.toUpperCase().trim()
+    const displayName = user?.name ?? nickname.trim()
+
+    if (!trimmedCode) {
+      setError('Please enter a session code.')
       setJoining(false)
       return
     }
 
-    // 2. Join session
+    if (!displayName) {
+      setError('Please enter a nickname.')
+      setJoining(false)
+      return
+    }
+
+    // 1. Look up session by code
+    const { session, error: fetchErr } = await fetchSessionByCode(trimmedCode)
+    if (fetchErr || !session) {
+      setError(fetchErr ?? 'Session not found. Check the code and try again.')
+      setJoining(false)
+      return
+    }
+
+    // 2. Join the session
     const { student, error: joinErr } = await joinSession(
       session.id,
       displayName,
@@ -63,24 +75,20 @@ export default function JoinSession() {
       return
     }
 
-    // 3. Store guest state if not authenticated
+    // 3. If guest (no user), set guest state
     if (!user) {
-      setGuestSession(buildGuestState(session, student))
+      const guest = buildGuestState(session, student)
+      setGuestSession(guest)
     }
 
     // 4. Navigate to session view
+    setJoining(false)
     navigate(`/student/session/${session.id}`)
-  }
-
-  function handleRejoin() {
-    if (guestState) {
-      navigate(`/student/session/${guestState.sessionId}`)
-    }
   }
 
   return (
     <AppShell>
-      <div className="max-w-md mx-auto mt-8">
+      <div className="max-w-md mx-auto mt-8 fade-in-up">
         <h1 className="text-2xl font-bold mb-2" style={{ color: '#F0F0F7' }}>
           Join a Session
         </h1>
@@ -88,41 +96,15 @@ export default function JoinSession() {
           Enter the code your instructor gave you, or scan the QR code.
         </p>
 
-        {/* Existing session banner */}
-        {hasExistingSession && (
-          <button
-            onClick={handleRejoin}
-            className="w-full mb-6 px-4 py-3 rounded-xl text-sm text-left flex items-center justify-between transition-colors hover:opacity-90"
-            style={{ backgroundColor: '#E8447A22', border: '1px solid #E8447A44', color: '#FF9EC8' }}
-          >
-            <div>
-              <span className="font-medium">Rejoin as </span>
-              <span className="font-bold" style={{ color: '#F0F0F7' }}>{guestState!.nickname}</span>
-              <span className="ml-2 font-mono text-xs" style={{ color: '#9090B0' }}>{guestState!.joinCode}</span>
-            </div>
-            <span>→</span>
-          </button>
-        )}
-
-        {(user || guestState) && (
-          <div
-            className="mb-6 px-4 py-3 rounded-xl text-sm flex items-center gap-2"
-            style={{ backgroundColor: '#1A1A26', border: '1px solid #2E2E45', color: '#9090B0' }}
-          >
+        {user && (
+          <div className="glass mb-6 px-4 py-3 text-sm flex items-center gap-2">
             <span style={{ color: '#E8447A' }}>●</span>
-            Signed in as{' '}
-            <strong style={{ color: '#F0F0F7' }}>
-              {user?.name ?? guestState?.nickname}
-            </strong>
-          </div>
-        )}
-
-        {error && (
-          <div
-            className="mb-4 px-4 py-3 rounded-lg text-sm"
-            style={{ backgroundColor: '#2E1A24', color: '#FF6BA8', border: '1px solid #C42E60' }}
-          >
-            {error}
+            <span style={{ color: '#9090B0' }}>
+              Signed in as{' '}
+              <strong style={{ color: '#F0F0F7' }}>
+                {user.name}
+              </strong>
+            </span>
           </div>
         )}
 
@@ -138,15 +120,8 @@ export default function JoinSession() {
               required
               placeholder="e.g. ABC123"
               maxLength={8}
-              className="w-full px-4 py-3 rounded-xl text-lg font-mono text-center outline-none tracking-widest uppercase"
-              style={{
-                backgroundColor: '#1A1A26',
-                border: '1px solid #2E2E45',
-                color: '#F0F0F7',
-                letterSpacing: '0.25em',
-              }}
-              onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-              onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+              className="glass-input w-full px-4 py-3 text-lg font-mono text-center tracking-widest uppercase"
+              style={{ letterSpacing: '0.25em' }}
             />
           </div>
 
@@ -159,30 +134,41 @@ export default function JoinSession() {
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                required={!user}
+                required
                 placeholder="e.g. EconNerd42"
                 maxLength={30}
-                className="w-full px-4 py-2.5 rounded-xl text-sm outline-none"
-                style={{
-                  backgroundColor: '#1A1A26',
-                  border: '1px solid #2E2E45',
-                  color: '#F0F0F7',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
+            </div>
+          )}
+
+          {error && (
+            <div className="alert-error text-sm px-4 py-3 rounded-lg">
+              {error}
             </div>
           )}
 
           <button
             type="submit"
             disabled={joining}
-            className="w-full py-3 rounded-xl font-medium text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-            style={{ backgroundColor: '#E8447A', color: '#fff' }}
+            className="btn-liquid w-full py-3"
           >
             {joining ? 'Joining…' : 'Join session →'}
           </button>
         </form>
+
+        {!user && (
+          <p className="text-center text-xs mt-6" style={{ color: '#9090B0' }}>
+            Already have an account?{' '}
+            <a
+              href="/auth/login"
+              className="font-medium"
+              style={{ color: '#E8447A' }}
+            >
+              Sign in
+            </a>
+          </p>
+        )}
       </div>
     </AppShell>
   )

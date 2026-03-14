@@ -52,16 +52,19 @@ export default function CompleteProfile() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#0D0D12' }}>
-      <div className="w-full max-w-md">
+    <div className="liquid-bg min-h-screen flex items-center justify-center px-4">
+      {/* Floating orb */}
+      <div className="liquid-orb-3" />
+
+      <div className="w-full max-w-md relative z-[1] fade-in-up">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold" style={{ color: '#E8447A' }}>Proofgrad</h1>
+          <h1 className="glow-text text-3xl font-bold">Proofgrad</h1>
           <p className="mt-2 text-sm" style={{ color: '#9090B0' }}>
             Complete your profile to unlock PDF export
           </p>
         </div>
 
-        <div className="rounded-2xl p-8" style={{ backgroundColor: '#1A1A26', border: '1px solid #2E2E45' }}>
+        <div className="glass-strong p-8">
           <h2 className="text-xl font-semibold mb-2" style={{ color: '#F0F0F7' }}>
             Complete your profile
           </h2>
@@ -70,10 +73,7 @@ export default function CompleteProfile() {
           </p>
 
           {error && (
-            <div
-              className="mb-4 px-4 py-3 rounded-lg text-sm"
-              style={{ backgroundColor: '#2E1A24', color: '#FF6BA8', border: '1px solid #C42E60' }}
-            >
+            <div className="alert-error mb-4 px-4 py-3 text-sm">
               {error}
             </div>
           )}
@@ -88,10 +88,7 @@ export default function CompleteProfile() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 98765 43210"
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
-                style={{ backgroundColor: '#0D0D12', border: '1px solid #2E2E45', color: '#F0F0F7' }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>
 
@@ -102,8 +99,8 @@ export default function CompleteProfile() {
               <select
                 value={yearOfStudy}
                 onChange={(e) => setYearOfStudy(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
-                style={{ backgroundColor: '#0D0D12', border: '1px solid #2E2E45', color: yearOfStudy ? '#F0F0F7' : '#9090B0' }}
+                className="glass-select w-full px-4 py-2.5 text-sm"
+                style={{ color: yearOfStudy ? '#F0F0F7' : '#9090B0' }}
               >
                 <option value="">Select year</option>
                 {YEARS.map((y) => (
@@ -122,12 +119,9 @@ export default function CompleteProfile() {
                     key={a}
                     type="button"
                     onClick={() => setAccommodation(a)}
-                    className="flex-1 py-2.5 rounded-lg text-sm font-medium transition-all"
-                    style={{
-                      backgroundColor: accommodation === a ? '#E8447A' : '#0D0D12',
-                      color: accommodation === a ? '#fff' : '#9090B0',
-                      border: `1px solid ${accommodation === a ? '#E8447A' : '#2E2E45'}`,
-                    }}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      accommodation === a ? 'btn-liquid' : 'btn-ghost'
+                    }`}
                   >
                     {a === 'hostel' ? 'Hostelite' : 'Day Scholar'}
                   </button>
@@ -144,10 +138,7 @@ export default function CompleteProfile() {
                 value={instagram}
                 onChange={(e) => setInstagram(e.target.value)}
                 placeholder="@username"
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
-                style={{ backgroundColor: '#0D0D12', border: '1px solid #2E2E45', color: '#F0F0F7' }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>
 
@@ -160,18 +151,14 @@ export default function CompleteProfile() {
                 value={linkedin}
                 onChange={(e) => setLinkedin(e.target.value)}
                 placeholder="linkedin.com/in/username"
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
-                style={{ backgroundColor: '#0D0D12', border: '1px solid #2E2E45', color: '#F0F0F7' }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-lg font-medium text-sm disabled:opacity-60"
-              style={{ backgroundColor: '#E8447A', color: '#fff' }}
+              className="btn-liquid w-full py-2.5"
             >
               {loading ? 'Saving…' : 'Save & unlock export'}
             </button>
@@ -179,8 +166,7 @@ export default function CompleteProfile() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="w-full py-2.5 rounded-lg text-sm"
-              style={{ color: '#9090B0' }}
+              className="btn-ghost w-full py-2.5"
             >
               Skip for now
             </button>

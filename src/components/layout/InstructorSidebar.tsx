@@ -18,11 +18,9 @@ interface Props {
 export default function InstructorSidebar({ collapsed = false, onToggle }: Props) {
   return (
     <aside
-      className="flex flex-col h-full transition-all duration-200"
+      className="glass-sidebar flex flex-col h-full transition-all duration-300"
       style={{
         width: collapsed ? 56 : 220,
-        backgroundColor: '#1A1A26',
-        borderRight: '1px solid #2E2E45',
         minHeight: 0,
       }}
     >
@@ -30,7 +28,7 @@ export default function InstructorSidebar({ collapsed = false, onToggle }: Props
       {onToggle && (
         <button
           onClick={onToggle}
-          className="self-end m-3 p-1.5 rounded-lg transition-colors"
+          className="self-end m-3 p-1.5 rounded-lg transition-all hover:bg-white/5"
           style={{ color: '#9090B0' }}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
@@ -50,13 +48,16 @@ export default function InstructorSidebar({ collapsed = false, onToggle }: Props
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive ? 'text-white' : 'hover:opacity-80'
+              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                isActive ? 'text-white' : 'hover:bg-white/5'
               }`
             }
             style={({ isActive }) => ({
-              backgroundColor: isActive ? '#E8447A' : 'transparent',
+              background: isActive
+                ? 'linear-gradient(135deg, #E8447A, #C42E60)'
+                : 'transparent',
               color: isActive ? '#fff' : '#9090B0',
+              boxShadow: isActive ? '0 2px 12px rgba(232, 68, 122, 0.3)' : 'none',
             })}
           >
             <span className="text-base flex-shrink-0">{item.icon}</span>

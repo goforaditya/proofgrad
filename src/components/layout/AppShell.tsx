@@ -19,10 +19,13 @@ export default function AppShell({ children, showSidebar = false, fullWidth = fa
     showSidebar && user?.role === 'instructor'
 
   return (
-    <div className="flex flex-col h-screen" style={{ backgroundColor: '#0D0D12' }}>
+    <div className="liquid-bg flex flex-col h-screen">
+      {/* Floating orb 3 */}
+      <div className="liquid-orb-3" />
+
       <Navbar />
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 relative z-[1]">
         {showInstructorSidebar && (
           <InstructorSidebar
             collapsed={sidebarCollapsed}

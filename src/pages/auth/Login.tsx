@@ -42,27 +42,27 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#0D0D12' }}>
-      <div className="w-full max-w-md">
+    <div className="liquid-bg min-h-screen flex items-center justify-center px-4">
+      {/* Floating orb */}
+      <div className="liquid-orb-3" />
+
+      <div className="w-full max-w-md relative z-[1] fade-in-up">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold" style={{ color: '#E8447A' }}>Proofgrad</h1>
+          <h1 className="glow-text text-3xl font-bold">Proofgrad</h1>
           <p className="mt-2 text-sm" style={{ color: '#9090B0' }}>
             AI-powered economics learning platform
           </p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl p-8" style={{ backgroundColor: '#1A1A26', border: '1px solid #2E2E45' }}>
+        <div className="glass-strong p-8">
           <h2 className="text-xl font-semibold mb-6" style={{ color: '#F0F0F7' }}>
             Sign in to your account
           </h2>
 
           {error && (
-            <div
-              className="mb-4 px-4 py-3 rounded-lg text-sm"
-              style={{ backgroundColor: '#2E1A24', color: '#FF6BA8', border: '1px solid #C42E60' }}
-            >
+            <div className="alert-error mb-4 px-4 py-3 text-sm">
               {error}
             </div>
           )}
@@ -83,14 +83,7 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none transition-colors"
-                style={{
-                  backgroundColor: '#0D0D12',
-                  border: '1px solid #2E2E45',
-                  color: '#F0F0F7',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>
 
@@ -109,22 +102,14 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none transition-colors"
-                style={{
-                  backgroundColor: '#0D0D12',
-                  border: '1px solid #2E2E45',
-                  color: '#F0F0F7',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-lg font-medium text-sm transition-opacity disabled:opacity-60"
-              style={{ backgroundColor: '#E8447A', color: '#fff' }}
+              className="btn-liquid w-full py-2.5"
             >
               {loading ? 'Signing in…' : 'Sign in'}
             </button>

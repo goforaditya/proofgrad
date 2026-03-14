@@ -15,16 +15,10 @@ export default function Navbar() {
   const displayName = user?.name ?? guestState?.nickname ?? null
 
   return (
-    <header
-      className="sticky top-0 z-50 flex items-center justify-between px-4 md:px-6 h-14"
-      style={{
-        backgroundColor: '#1A1A26',
-        borderBottom: '1px solid #2E2E45',
-      }}
-    >
+    <header className="glass-nav sticky top-0 z-50 flex items-center justify-between px-4 md:px-6 h-14">
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2">
-        <span className="text-xl font-bold tracking-tight" style={{ color: '#E8447A' }}>
+        <span className="glow-text text-xl font-bold tracking-tight">
           Proofgrad
         </span>
       </Link>
@@ -32,15 +26,13 @@ export default function Navbar() {
       {/* Desktop nav */}
       <nav className="hidden md:flex items-center gap-4">
         {user?.role === 'instructor' && (
-          <>
-            <Link
-              to="/instructor/dashboard"
-              className="text-sm transition-colors hover:opacity-80"
-              style={{ color: '#9090B0' }}
-            >
-              Dashboard
-            </Link>
-          </>
+          <Link
+            to="/instructor/dashboard"
+            className="text-sm transition-colors hover:text-[#F0F0F7]"
+            style={{ color: '#9090B0' }}
+          >
+            Dashboard
+          </Link>
         )}
 
         {displayName ? (
@@ -48,10 +40,7 @@ export default function Navbar() {
             <span className="text-sm" style={{ color: '#F0F0F7' }}>
               {displayName}
               {guestState && (
-                <span
-                  className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
-                  style={{ backgroundColor: '#2E2E45', color: '#9090B0' }}
-                >
+                <span className="badge-muted ml-1.5">
                   guest
                 </span>
               )}
@@ -59,8 +48,7 @@ export default function Navbar() {
             {user && (
               <button
                 onClick={handleSignOut}
-                className="text-sm px-3 py-1.5 rounded-lg transition-colors"
-                style={{ color: '#9090B0', border: '1px solid #2E2E45' }}
+                className="btn-ghost text-sm px-3 py-1.5"
               >
                 Sign out
               </button>
@@ -69,8 +57,7 @@ export default function Navbar() {
         ) : (
           <Link
             to="/auth/login"
-            className="text-sm px-4 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-80"
-            style={{ backgroundColor: '#E8447A', color: '#fff' }}
+            className="btn-liquid text-sm px-4 py-1.5"
           >
             Sign in
           </Link>
@@ -103,10 +90,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div
-          className="absolute top-14 left-0 right-0 md:hidden px-4 py-4 flex flex-col gap-3"
-          style={{ backgroundColor: '#1A1A26', borderBottom: '1px solid #2E2E45' }}
-        >
+        <div className="glass-strong absolute top-14 left-2 right-2 md:hidden px-4 py-4 flex flex-col gap-3 rounded-xl mt-2">
           {user?.role === 'instructor' && (
             <Link
               to="/instructor/dashboard"

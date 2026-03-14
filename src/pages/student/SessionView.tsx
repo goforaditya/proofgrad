@@ -70,10 +70,7 @@ export default function SessionView() {
     return (
       <AppShell>
         <div className="flex items-center justify-center py-20">
-          <div
-            className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-            style={{ borderColor: '#E8447A', borderTopColor: 'transparent' }}
-          />
+          <div className="liquid-spinner" />
         </div>
       </AppShell>
     )
@@ -100,23 +97,14 @@ export default function SessionView() {
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto fade-in-up">
         {/* Session header */}
-        <div
-          className="rounded-2xl p-6 mb-6"
-          style={{ backgroundColor: '#1A1A26', border: '1px solid #2E2E45' }}
-        >
+        <div className="glass p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-lg font-bold" style={{ color: '#F0F0F7' }}>
               {session.title}
             </h1>
-            <span
-              className="text-xs px-2.5 py-1 rounded-full font-medium"
-              style={{
-                backgroundColor: phase === 'ended' ? '#2E2E45' : '#E8447A22',
-                color: phase === 'ended' ? '#9090B0' : '#E8447A',
-              }}
-            >
+            <span className={phase === 'ended' ? 'badge-muted' : 'badge-glow'}>
               {phase.charAt(0).toUpperCase() + phase.slice(1)}
             </span>
           </div>
@@ -132,10 +120,7 @@ export default function SessionView() {
         </div>
 
         {/* Phase status card */}
-        <div
-          className="rounded-2xl p-8 text-center"
-          style={{ backgroundColor: '#1A1A26', border: '1px solid #2E2E45' }}
-        >
+        <div className="glass p-8 text-center">
           {/* Phase indicator */}
           <div className="flex justify-center gap-1.5 mb-6">
             {(['lobby', 'survey', 'dataset', 'analysis', 'quiz'] as SessionPhase[]).map((p) => {
@@ -147,10 +132,9 @@ export default function SessionView() {
               return (
                 <div
                   key={p}
-                  className="h-1.5 rounded-full flex-1 max-w-12"
-                  style={{
-                    backgroundColor: isActive ? '#E8447A' : isPast ? '#E8447A66' : '#2E2E45',
-                  }}
+                  className={`phase-dot h-1.5 flex-1 max-w-12 ${
+                    isActive ? 'active' : isPast ? 'past' : 'future'
+                  }`}
                 />
               )
             })}
@@ -163,25 +147,14 @@ export default function SessionView() {
             {PHASE_DESCRIPTIONS[phase]}
           </p>
 
-          {/* Phase-specific actions (stubs for future phases) */}
+          {/* Phase-specific actions */}
           {phase === 'lobby' && (
-            <div className="mt-8">
-              <div
-                className="w-16 h-16 rounded-full mx-auto flex items-center justify-center animate-pulse"
-                style={{ backgroundColor: '#E8447A22' }}
-              >
-                <div
-                  className="w-8 h-8 rounded-full"
-                  style={{ backgroundColor: '#E8447A44' }}
-                />
-              </div>
-            </div>
+            <div className="mt-8 lobby-pulse" style={{ height: 80 }} />
           )}
 
           {phase === 'survey' && (
             <button
-              className="mt-6 px-6 py-2.5 rounded-lg text-sm font-medium"
-              style={{ backgroundColor: '#E8447A', color: '#fff' }}
+              className="btn-liquid mt-6 px-6 py-2.5"
               disabled
               title="Survey form ships in Phase 3"
             >
@@ -191,8 +164,7 @@ export default function SessionView() {
 
           {phase === 'dataset' && (
             <button
-              className="mt-6 px-6 py-2.5 rounded-lg text-sm font-medium"
-              style={{ backgroundColor: '#E8447A', color: '#fff' }}
+              className="btn-liquid mt-6 px-6 py-2.5"
               disabled
               title="Dataset view ships in Phase 4"
             >
@@ -202,8 +174,7 @@ export default function SessionView() {
 
           {phase === 'analysis' && (
             <button
-              className="mt-6 px-6 py-2.5 rounded-lg text-sm font-medium"
-              style={{ backgroundColor: '#E8447A', color: '#fff' }}
+              className="btn-liquid mt-6 px-6 py-2.5"
               disabled
               title="Analysis workspace ships in Phase 4"
             >
@@ -213,8 +184,7 @@ export default function SessionView() {
 
           {phase === 'quiz' && (
             <button
-              className="mt-6 px-6 py-2.5 rounded-lg text-sm font-medium"
-              style={{ backgroundColor: '#E8447A', color: '#fff' }}
+              className="btn-liquid mt-6 px-6 py-2.5"
               disabled
               title="Quiz ships in Phase 5"
             >
@@ -225,8 +195,7 @@ export default function SessionView() {
           {phase === 'ended' && (
             <button
               onClick={() => navigate('/student/join')}
-              className="mt-6 px-6 py-2.5 rounded-lg text-sm font-medium"
-              style={{ backgroundColor: '#2E2E45', color: '#9090B0' }}
+              className="btn-ghost mt-6 px-6 py-2.5"
             >
               Join another session
             </button>

@@ -14,15 +14,9 @@ export default function ProtectedRoute({ children, role }: Props) {
 
   if (loading) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: '#0D0D12' }}
-      >
+      <div className="liquid-bg min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div
-            className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-            style={{ borderColor: '#E8447A', borderTopColor: 'transparent' }}
-          />
+          <div className="liquid-spinner" />
           <span className="text-sm" style={{ color: '#9090B0' }}>Loading…</span>
         </div>
       </div>

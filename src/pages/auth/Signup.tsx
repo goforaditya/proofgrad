@@ -48,34 +48,33 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#0D0D12' }}>
-      <div className="w-full max-w-md">
+    <div className="liquid-bg min-h-screen flex items-center justify-center px-4">
+      {/* Floating orb */}
+      <div className="liquid-orb-3" />
+
+      <div className="w-full max-w-md relative z-[1] fade-in-up">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold" style={{ color: '#E8447A' }}>Proofgrad</h1>
+          <h1 className="glow-text text-3xl font-bold">Proofgrad</h1>
           <p className="mt-2 text-sm" style={{ color: '#9090B0' }}>
             AI-powered economics learning platform
           </p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl p-8" style={{ backgroundColor: '#1A1A26', border: '1px solid #2E2E45' }}>
+        <div className="glass-strong p-8">
           <h2 className="text-xl font-semibold mb-6" style={{ color: '#F0F0F7' }}>
             Create your account
           </h2>
 
           {/* Role toggle */}
-          <div className="flex gap-2 mb-6 p-1 rounded-xl" style={{ backgroundColor: '#0D0D12' }}>
+          <div className="role-toggle-wrap flex gap-1 mb-6">
             {(['student', 'instructor'] as UserRole[]).map((r) => (
               <button
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                className="flex-1 py-2 rounded-lg text-sm font-medium transition-all"
-                style={{
-                  backgroundColor: role === r ? '#E8447A' : 'transparent',
-                  color: role === r ? '#fff' : '#9090B0',
-                }}
+                className={`role-toggle-btn flex-1 py-2 ${role === r ? 'active' : ''}`}
               >
                 {r === 'student' ? "I'm a Student" : "I'm an Instructor"}
               </button>
@@ -83,10 +82,7 @@ export default function Signup() {
           </div>
 
           {error && (
-            <div
-              className="mb-4 px-4 py-3 rounded-lg text-sm"
-              style={{ backgroundColor: '#2E1A24', color: '#FF6BA8', border: '1px solid #C42E60' }}
-            >
+            <div className="alert-error mb-4 px-4 py-3 text-sm">
               {error}
             </div>
           )}
@@ -107,14 +103,7 @@ export default function Signup() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Satya Nadella"
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
-                style={{
-                  backgroundColor: '#0D0D12',
-                  border: '1px solid #2E2E45',
-                  color: '#F0F0F7',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>
 
@@ -133,14 +122,7 @@ export default function Signup() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
-                style={{
-                  backgroundColor: '#0D0D12',
-                  border: '1px solid #2E2E45',
-                  color: '#F0F0F7',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>
 
@@ -160,22 +142,14 @@ export default function Signup() {
                 required
                 minLength={8}
                 placeholder="Min. 8 characters"
-                className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
-                style={{
-                  backgroundColor: '#0D0D12',
-                  border: '1px solid #2E2E45',
-                  color: '#F0F0F7',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#E8447A')}
-                onBlur={(e) => (e.target.style.borderColor = '#2E2E45')}
+                className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-lg font-medium text-sm transition-opacity disabled:opacity-60"
-              style={{ backgroundColor: '#E8447A', color: '#fff' }}
+              className="btn-liquid w-full py-2.5"
             >
               {loading ? 'Creating account…' : 'Create account'}
             </button>

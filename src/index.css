@@ -32,18 +32,523 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar styling */
+/* ===================================================================
+   SCROLLBAR
+   =================================================================== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #1A1A26;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2E2E45;
+  background: rgba(144, 144, 176, 0.2);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #9090B0;
+  background: rgba(144, 144, 176, 0.4);
+}
+
+/* ===================================================================
+   KEYFRAME ANIMATIONS
+   =================================================================== */
+
+/* Floating orbs behind content */
+@keyframes float-orb-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(80px, -60px) scale(1.1); }
+  50% { transform: translate(-40px, -120px) scale(0.95); }
+  75% { transform: translate(-80px, 40px) scale(1.05); }
+}
+
+@keyframes float-orb-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-60px, 80px) scale(1.05); }
+  50% { transform: translate(100px, 40px) scale(0.9); }
+  75% { transform: translate(40px, -80px) scale(1.1); }
+}
+
+@keyframes float-orb-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-100px, -40px) scale(1.08); }
+  66% { transform: translate(60px, 80px) scale(0.92); }
+}
+
+/* Gradient rotation for borders */
+@keyframes gradient-spin {
+  0% { --gradient-angle: 0deg; }
+  100% { --gradient-angle: 360deg; }
+}
+
+/* Gentle pulse glow */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Shimmer sweep */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Phase dot pulse */
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 68, 122, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(232, 68, 122, 0); }
+}
+
+/* Gradient ring spin for loading */
+@keyframes ring-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Fade-in up */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ===================================================================
+   LIQUID BACKGROUND — animated mesh gradient with floating orbs
+   =================================================================== */
+
+.liquid-bg {
+  position: relative;
+  overflow: hidden;
+  background: #0D0D12;
+}
+
+.liquid-bg::before,
+.liquid-bg::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(100px);
+  will-change: transform;
+}
+
+/* Large pink orb */
+.liquid-bg::before {
+  width: 500px;
+  height: 500px;
+  top: -10%;
+  right: -5%;
+  background: radial-gradient(circle, rgba(232, 68, 122, 0.15) 0%, transparent 70%);
+  animation: float-orb-1 20s ease-in-out infinite;
+}
+
+/* Blue/purple orb */
+.liquid-bg::after {
+  width: 400px;
+  height: 400px;
+  bottom: -5%;
+  left: -5%;
+  background: radial-gradient(circle, rgba(100, 80, 200, 0.12) 0%, transparent 70%);
+  animation: float-orb-2 25s ease-in-out infinite;
+}
+
+/* Third orb via a child element */
+.liquid-orb-3 {
+  position: fixed;
+  width: 350px;
+  height: 350px;
+  top: 40%;
+  left: 50%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(100px);
+  background: radial-gradient(circle, rgba(232, 68, 122, 0.08) 0%, rgba(80, 60, 180, 0.06) 50%, transparent 70%);
+  animation: float-orb-3 18s ease-in-out infinite;
+}
+
+/* ===================================================================
+   GLASS CARD — frosted glass panel
+   =================================================================== */
+
+.glass {
+  background: rgba(26, 26, 38, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+
+.glass:hover {
+  border-color: rgba(232, 68, 122, 0.15);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(232, 68, 122, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Stronger glass — for modals, important cards */
+.glass-strong {
+  background: rgba(26, 26, 38, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+}
+
+/* Glass for navbar/sidebar — subtle */
+.glass-nav {
+  background: rgba(26, 26, 38, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.glass-sidebar {
+  background: rgba(26, 26, 38, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===================================================================
+   GLASS INPUT — input fields with glow
+   =================================================================== */
+
+.glass-input {
+  background: rgba(13, 13, 18, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  color: #F0F0F7;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.glass-input::placeholder {
+  color: rgba(144, 144, 176, 0.6);
+}
+
+.glass-input:focus {
+  border-color: rgba(232, 68, 122, 0.5);
+  box-shadow:
+    0 0 0 3px rgba(232, 68, 122, 0.1),
+    0 0 20px rgba(232, 68, 122, 0.08),
+    inset 0 0 20px rgba(232, 68, 122, 0.03);
+}
+
+/* Select specific styling */
+.glass-select {
+  background: rgba(13, 13, 18, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  color: #F0F0F7;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.glass-select:focus {
+  border-color: rgba(232, 68, 122, 0.5);
+  box-shadow: 0 0 0 3px rgba(232, 68, 122, 0.1);
+}
+
+.glass-select option {
+  background: #1A1A26;
+  color: #F0F0F7;
+}
+
+/* ===================================================================
+   LIQUID BUTTON — gradient fill with glow + hover effects
+   =================================================================== */
+
+.btn-liquid {
+  position: relative;
+  background: linear-gradient(135deg, #E8447A 0%, #C42E60 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 16px rgba(232, 68, 122, 0.3),
+    0 0 0 0 rgba(232, 68, 122, 0);
+}
+
+.btn-liquid:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 24px rgba(232, 68, 122, 0.4),
+    0 0 40px rgba(232, 68, 122, 0.15);
+}
+
+.btn-liquid:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-liquid:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Shimmer effect on hover */
+.btn-liquid::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  transition: none;
+}
+
+.btn-liquid:hover:not(:disabled)::after {
+  animation: shimmer 0.8s ease-out;
+}
+
+/* Secondary / ghost button */
+.btn-ghost {
+  background: rgba(46, 46, 69, 0.4);
+  color: #9090B0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(46, 46, 69, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #F0F0F7;
+}
+
+/* ===================================================================
+   ROLE TOGGLE — segmented control with glow
+   =================================================================== */
+
+.role-toggle-wrap {
+  background: rgba(13, 13, 18, 0.6);
+  border-radius: 14px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.role-toggle-btn {
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #9090B0;
+}
+
+.role-toggle-btn.active {
+  background: linear-gradient(135deg, #E8447A 0%, #C42E60 100%);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(232, 68, 122, 0.3);
+}
+
+/* ===================================================================
+   GLOW TEXT — for headings / branding
+   =================================================================== */
+
+.glow-text {
+  color: #E8447A;
+  text-shadow:
+    0 0 10px rgba(232, 68, 122, 0.4),
+    0 0 40px rgba(232, 68, 122, 0.15);
+}
+
+/* ===================================================================
+   PHASE DOTS — animated progress indicators
+   =================================================================== */
+
+.phase-dot {
+  border-radius: 9999px;
+  transition: all 0.4s ease;
+}
+
+.phase-dot.active {
+  background: #E8447A;
+  box-shadow: 0 0 8px rgba(232, 68, 122, 0.5);
+  animation: dot-pulse 2s ease-in-out infinite;
+}
+
+.phase-dot.past {
+  background: rgba(232, 68, 122, 0.4);
+}
+
+.phase-dot.future {
+  background: rgba(46, 46, 69, 0.6);
+}
+
+/* ===================================================================
+   PHASE STEPPER — vertical phase control with glow
+   =================================================================== */
+
+.phase-step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.phase-step-circle.active {
+  background: linear-gradient(135deg, #E8447A, #C42E60);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(232, 68, 122, 0.4);
+}
+
+.phase-step-circle.past {
+  background: rgba(232, 68, 122, 0.2);
+  color: #E8447A;
+}
+
+.phase-step-circle.future {
+  background: rgba(46, 46, 69, 0.5);
+  color: #9090B0;
+}
+
+/* ===================================================================
+   LOADING SPINNER — gradient ring
+   =================================================================== */
+
+.liquid-spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(232, 68, 122, 0.15);
+  border-top-color: #E8447A;
+  animation: ring-spin 0.8s linear infinite;
+  box-shadow: 0 0 16px rgba(232, 68, 122, 0.15);
+}
+
+/* ===================================================================
+   BADGE / PILL
+   =================================================================== */
+
+.badge-glow {
+  background: rgba(232, 68, 122, 0.12);
+  color: #E8447A;
+  border: 1px solid rgba(232, 68, 122, 0.15);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 2px 10px;
+}
+
+.badge-muted {
+  background: rgba(46, 46, 69, 0.5);
+  color: #9090B0;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 2px 10px;
+}
+
+/* ===================================================================
+   ERROR ALERT
+   =================================================================== */
+
+.alert-error {
+  background: rgba(232, 68, 122, 0.08);
+  border: 1px solid rgba(232, 68, 122, 0.2);
+  border-radius: 12px;
+  color: #FF6BA8;
+  backdrop-filter: blur(8px);
+}
+
+/* ===================================================================
+   FADE IN ANIMATION
+   =================================================================== */
+
+.fade-in-up {
+  animation: fade-in-up 0.5s ease-out both;
+}
+
+/* Staggered children */
+.fade-in-up:nth-child(2) { animation-delay: 0.05s; }
+.fade-in-up:nth-child(3) { animation-delay: 0.1s; }
+.fade-in-up:nth-child(4) { animation-delay: 0.15s; }
+.fade-in-up:nth-child(5) { animation-delay: 0.2s; }
+
+/* ===================================================================
+   LOBBY PULSE — animated waiting indicator
+   =================================================================== */
+
+.lobby-pulse {
+  position: relative;
+}
+
+.lobby-pulse::before,
+.lobby-pulse::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.lobby-pulse::before {
+  width: 80px;
+  height: 80px;
+  background: rgba(232, 68, 122, 0.08);
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.lobby-pulse::after {
+  width: 48px;
+  height: 48px;
+  background: rgba(232, 68, 122, 0.15);
+  animation: glow-pulse 3s ease-in-out infinite 0.5s;
+}
+
+/* ===================================================================
+   STUDENT AVATAR
+   =================================================================== */
+
+.avatar-glow {
+  background: rgba(232, 68, 122, 0.1);
+  color: #E8447A;
+  border: 1px solid rgba(232, 68, 122, 0.15);
+  box-shadow: 0 0 8px rgba(232, 68, 122, 0.08);
+}
+
+/* ===================================================================
+   QR CARD
+   =================================================================== */
+
+.qr-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
