@@ -11,9 +11,11 @@ import ProtectedRoute from '@/components/layout/ProtectedRoute'
 
 // Instructor pages
 import InstructorDashboard from '@/pages/instructor/Dashboard'
+import SessionControl from '@/pages/instructor/SessionControl'
 
 // Student pages
 import JoinSession from '@/pages/student/JoinSession'
+import SessionView from '@/pages/student/SessionView'
 
 function RootRedirect() {
   const { user, loading, guestState } = useAuth()
@@ -53,9 +55,18 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/instructor/session/:sessionId"
+          element={
+            <ProtectedRoute role="instructor">
+              <SessionControl />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Student routes (public — guests allowed) */}
         <Route path="/student/join" element={<JoinSession />} />
+        <Route path="/student/session/:sessionId" element={<SessionView />} />
 
         {/* Unauthorized */}
         <Route path="/unauthorized" element={<Unauthorized />} />
