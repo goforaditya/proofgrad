@@ -192,6 +192,18 @@ export default function SessionControl() {
             </p>
           </div>
 
+          {/* Survey management link */}
+          {!isEnded && (
+            <div>
+              <button
+                onClick={() => navigate(`/instructor/session/${sessionId}/survey`)}
+                className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
+              >
+                <span>📋</span> Manage surveys
+              </button>
+            </div>
+          )}
+
           {/* Phase control */}
           {!isEnded && (
             <div>

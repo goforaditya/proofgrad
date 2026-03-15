@@ -155,8 +155,7 @@ export default function SessionView() {
           {phase === 'survey' && (
             <button
               className="btn-liquid mt-6 px-6 py-2.5"
-              disabled
-              title="Survey form ships in Phase 3"
+              onClick={() => navigate(`/student/session/${sessionId}/survey`)}
             >
               Open survey →
             </button>
@@ -165,8 +164,7 @@ export default function SessionView() {
           {phase === 'dataset' && (
             <button
               className="btn-liquid mt-6 px-6 py-2.5"
-              disabled
-              title="Dataset view ships in Phase 4"
+              onClick={() => navigate(`/student/session/${sessionId}/dataset`)}
             >
               View dataset →
             </button>
@@ -175,8 +173,7 @@ export default function SessionView() {
           {phase === 'analysis' && (
             <button
               className="btn-liquid mt-6 px-6 py-2.5"
-              disabled
-              title="Analysis workspace ships in Phase 4"
+              onClick={() => navigate(`/student/session/${sessionId}/analysis`)}
             >
               Open workspace →
             </button>

@@ -552,3 +552,42 @@ body {
   padding: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
+
+/* ===================================================================
+   SLIDER — pink themed range input
+   =================================================================== */
+
+.slider-pink {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(46, 46, 69, 0.6);
+  outline: none;
+}
+
+.slider-pink::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E8447A, #C42E60);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(232, 68, 122, 0.4);
+  transition: box-shadow 0.2s;
+}
+
+.slider-pink::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 16px rgba(232, 68, 122, 0.6);
+}
+
+.slider-pink::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E8447A, #C42E60);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 10px rgba(232, 68, 122, 0.4);
+}

@@ -12,10 +12,14 @@ import ProtectedRoute from '@/components/layout/ProtectedRoute'
 // Instructor pages
 import InstructorDashboard from '@/pages/instructor/Dashboard'
 import SessionControl from '@/pages/instructor/SessionControl'
+import SurveyBuilder from '@/pages/instructor/SurveyBuilder'
 
 // Student pages
 import JoinSession from '@/pages/student/JoinSession'
 import SessionView from '@/pages/student/SessionView'
+import SurveyForm from '@/pages/student/SurveyForm'
+import DatasetView from '@/pages/student/DatasetView'
+import AnalysisWorkspace from '@/pages/student/AnalysisWorkspace'
 
 function RootRedirect() {
   const { user, loading, guestState } = useAuth()
@@ -63,10 +67,21 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/instructor/session/:sessionId/survey"
+          element={
+            <ProtectedRoute role="instructor">
+              <SurveyBuilder />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Student routes (public — guests allowed) */}
         <Route path="/student/join" element={<JoinSession />} />
         <Route path="/student/session/:sessionId" element={<SessionView />} />
+        <Route path="/student/session/:sessionId/survey" element={<SurveyForm />} />
+        <Route path="/student/session/:sessionId/dataset" element={<DatasetView />} />
+        <Route path="/student/session/:sessionId/analysis" element={<AnalysisWorkspace />} />
 
         {/* Unauthorized */}
         <Route path="/unauthorized" element={<Unauthorized />} />
