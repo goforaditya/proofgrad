@@ -4,7 +4,7 @@ import AppShell from '@/components/layout/AppShell'
 import MarkdownRenderer from '@/components/blog/MarkdownRenderer'
 import MarkdownToolbar from '@/components/blog/MarkdownToolbar'
 import { useAuth } from '@/lib/auth'
-import { createArticle, fetchMyArticles, deleteArticle } from '@/hooks/useArticles'
+import { createArticle, updateArticle, fetchMyArticles, deleteArticle } from '@/hooks/useArticles'
 import type { Article } from '@/types'
 
 export default function ArticleEditor() {
@@ -20,6 +20,7 @@ export default function ArticleEditor() {
 
   // Editor state
   const [showEditor, setShowEditor] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tags, setTags] = useState('')
@@ -34,21 +35,59 @@ export default function ArticleEditor() {
 
   useEffect(() => { loadArticles() }, [loadArticles])
 
-  async function handlePublish(e: FormEvent) {
+  function resetEditor() {
+    setTitle('')
+    setContent('')
+    setTags('')
+    setEditingId(null)
+    setShowEditor(false)
+  }
+
+  function startEdit(a: Article) {
+    setEditingId(a.id)
+    setTitle(a.title)
+    setContent(a.content)
+    setTags(a.tags.join(', '))
+    setShowEditor(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!user || !title.trim() || !content.trim()) return
 
     setSaving(true)
     const tagList = tags ? tags.split(',').map((t) => t.trim()).filter(Boolean) : []
-    const { article, error } = await createArticle(user.id, title, content, tagList, pinnedSessionId)
-    if (error) {
-      console.error(error)
-    } else if (article) {
-      setArticles((prev) => [article, ...prev])
-      setTitle('')
-      setContent('')
-      setTags('')
-      setShowEditor(false)
+
+    if (editingId) {
+      // Update existing article
+      const { error } = await updateArticle(editingId, {
+        title,
+        content,
+        tags: tagList,
+        pinned_session_id: pinnedSessionId ?? null,
+      })
+      if (error) {
+        console.error(error)
+      } else {
+        setArticles((prev) =>
+          prev.map((a) =>
+            a.id === editingId
+              ? { ...a, title, content, tags: tagList, pinned_session_id: pinnedSessionId ?? null }
+              : a
+          )
+        )
+        resetEditor()
+      }
+    } else {
+      // Create new article
+      const { article, error } = await createArticle(user.id, title, content, tagList, pinnedSessionId)
+      if (error) {
+        console.error(error)
+      } else if (article) {
+        setArticles((prev) => [article, ...prev])
+        resetEditor()
+      }
     }
     setSaving(false)
   }
@@ -81,7 +120,10 @@ export default function ArticleEditor() {
             </p>
           </div>
           <button
-            onClick={() => setShowEditor(!showEditor)}
+            onClick={() => {
+              if (showEditor) resetEditor()
+              else { setEditingId(null); setShowEditor(true) }
+            }}
             className="btn-liquid px-4 py-2 text-sm"
           >
             {showEditor ? 'Cancel' : '+ New article'}
@@ -90,7 +132,7 @@ export default function ArticleEditor() {
 
         {/* Editor with live preview */}
         {showEditor && (
-          <form onSubmit={handlePublish} className="glass p-6 mb-6 space-y-4 fade-in-up">
+          <form onSubmit={handleSubmit} className="glass p-6 mb-6 space-y-4 fade-in-up">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium mb-1.5" style={{ color: '#9090B0' }}>
@@ -173,7 +215,9 @@ export default function ArticleEditor() {
               disabled={saving}
               className="btn-liquid px-6 py-2.5"
             >
-              {saving ? 'Publishing…' : 'Publish article'}
+              {saving
+                ? (editingId ? 'Updating…' : 'Publishing…')
+                : (editingId ? 'Update article' : 'Publish article')}
             </button>
           </form>
         )}
@@ -204,13 +248,22 @@ export default function ArticleEditor() {
                       {a.pinned_session_id && ' · 📌 Pinned to session'}
                     </p>
                   </div>
-                  <button
-                    onClick={() => handleDelete(a.id)}
-                    className="text-xs px-2 py-1 rounded"
-                    style={{ color: '#9090B0' }}
-                  >
-                    Delete
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => startEdit(a)}
+                      className="text-xs px-2 py-1 rounded transition-colors hover:text-[#635BFF]"
+                      style={{ color: '#9090B0' }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(a.id)}
+                      className="text-xs px-2 py-1 rounded transition-colors hover:text-[#E8447A]"
+                      style={{ color: '#9090B0' }}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
                 {a.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-2">
