@@ -4,7 +4,7 @@ import type { SessionChannelEvent, ResponseCountEvent } from '@/types'
 type UnsubscribeFn = () => void
 
 /**
- * Subscribe to session phase/survey/quiz events.
+ * Subscribe to session phase/survey events.
  * Used by both instructor and student.
  */
 export function subscribeToSession(
@@ -17,9 +17,6 @@ export function subscribeToSession(
       onEvent(payload as SessionChannelEvent)
     })
     .on('broadcast', { event: 'survey_launched' }, ({ payload }) => {
-      onEvent(payload as SessionChannelEvent)
-    })
-    .on('broadcast', { event: 'quiz_launched' }, ({ payload }) => {
       onEvent(payload as SessionChannelEvent)
     })
     .subscribe()
@@ -81,25 +78,6 @@ export function subscribeToResponseCount(
     .on('broadcast', { event: 'response_count' }, ({ payload }) => {
       const e = payload as ResponseCountEvent
       onCount(e.count)
-    })
-    .subscribe()
-
-  return () => {
-    supabase.removeChannel(channel)
-  }
-}
-
-/**
- * Subscribe to live quiz result tallies.
- */
-export function subscribeToQuizResults(
-  quizId: string,
-  onResults: (results: Record<string, number>) => void
-): UnsubscribeFn {
-  const channel = supabase
-    .channel(`quiz_results:${quizId}`)
-    .on('broadcast', { event: 'quiz_result' }, ({ payload }) => {
-      onResults(payload as Record<string, number>)
     })
     .subscribe()
 

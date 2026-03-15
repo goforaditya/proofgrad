@@ -13,6 +13,8 @@ import ProtectedRoute from '@/components/layout/ProtectedRoute'
 import InstructorDashboard from '@/pages/instructor/Dashboard'
 import SessionControl from '@/pages/instructor/SessionControl'
 import SurveyBuilder from '@/pages/instructor/SurveyBuilder'
+import LectureNotesEditor from '@/pages/instructor/LectureNotesEditor'
+import ArticleEditor from '@/pages/instructor/ArticleEditor'
 
 // Student pages
 import JoinSession from '@/pages/student/JoinSession'
@@ -20,6 +22,12 @@ import SessionView from '@/pages/student/SessionView'
 import SurveyForm from '@/pages/student/SurveyForm'
 import DatasetView from '@/pages/student/DatasetView'
 import AnalysisWorkspace from '@/pages/student/AnalysisWorkspace'
+import PortfolioExport from '@/pages/student/PortfolioExport'
+import CpiBuilder from '@/pages/student/CpiBuilder'
+
+// Blog
+import ArticleFeed from '@/pages/blog/ArticleFeed'
+import ArticleView from '@/pages/blog/ArticleView'
 
 function RootRedirect() {
   const { user, loading, guestState } = useAuth()
@@ -75,6 +83,22 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/instructor/session/:sessionId/notes"
+          element={
+            <ProtectedRoute role="instructor">
+              <LectureNotesEditor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/articles"
+          element={
+            <ProtectedRoute role="instructor">
+              <ArticleEditor />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Student routes (public — guests allowed) */}
         <Route path="/student/join" element={<JoinSession />} />
@@ -82,6 +106,12 @@ export default function App() {
         <Route path="/student/session/:sessionId/survey" element={<SurveyForm />} />
         <Route path="/student/session/:sessionId/dataset" element={<DatasetView />} />
         <Route path="/student/session/:sessionId/analysis" element={<AnalysisWorkspace />} />
+        <Route path="/student/session/:sessionId/export" element={<PortfolioExport />} />
+        <Route path="/student/session/:sessionId/cpi" element={<CpiBuilder />} />
+
+        {/* Blog (public) */}
+        <Route path="/blog" element={<ArticleFeed />} />
+        <Route path="/blog/:articleId" element={<ArticleView />} />
 
         {/* Unauthorized */}
         <Route path="/unauthorized" element={<Unauthorized />} />

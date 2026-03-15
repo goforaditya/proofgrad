@@ -11,7 +11,6 @@ const PHASE_LABELS: Record<SessionPhase, string> = {
   survey: 'Survey is live!',
   dataset: 'Dataset released',
   analysis: 'Analysis time',
-  quiz: 'Quiz in progress!',
   ended: 'Session ended',
 }
 
@@ -20,7 +19,6 @@ const PHASE_DESCRIPTIONS: Record<SessionPhase, string> = {
   survey: 'Fill out the survey before it closes.',
   dataset: 'The anonymised dataset is now available for viewing.',
   analysis: 'Build charts and explore the data with AI-powered tools.',
-  quiz: 'Answer the quiz questions to test your understanding.',
   ended: 'This session has concluded. Thank you for participating!',
 }
 
@@ -123,10 +121,10 @@ export default function SessionView() {
         <div className="glass p-8 text-center">
           {/* Phase indicator */}
           <div className="flex justify-center gap-1.5 mb-6">
-            {(['lobby', 'survey', 'dataset', 'analysis', 'quiz'] as SessionPhase[]).map((p) => {
-              const phases: SessionPhase[] = ['lobby', 'survey', 'dataset', 'analysis', 'quiz']
+            {(['lobby', 'survey', 'dataset', 'analysis'] as SessionPhase[]).map((p) => {
+              const phases: SessionPhase[] = ['lobby', 'survey', 'dataset', 'analysis']
               const pi = phases.indexOf(p)
-              const ci = phases.indexOf(phase === 'ended' ? 'quiz' : phase)
+              const ci = phases.indexOf(phase === 'ended' ? 'analysis' : phase)
               const isActive = p === phase
               const isPast = pi < ci || phase === 'ended'
               return (
@@ -171,31 +169,45 @@ export default function SessionView() {
           )}
 
           {phase === 'analysis' && (
-            <button
-              className="btn-liquid mt-6 px-6 py-2.5"
-              onClick={() => navigate(`/student/session/${sessionId}/analysis`)}
-            >
-              Open workspace →
-            </button>
-          )}
-
-          {phase === 'quiz' && (
-            <button
-              className="btn-liquid mt-6 px-6 py-2.5"
-              disabled
-              title="Quiz ships in Phase 5"
-            >
-              Start quiz →
-            </button>
+            <div className="flex flex-col gap-3 mt-6">
+              <button
+                className="btn-liquid px-6 py-2.5"
+                onClick={() => navigate(`/student/session/${sessionId}/analysis`)}
+              >
+                Open workspace →
+              </button>
+              <div className="flex gap-2 justify-center">
+                <button
+                  className="btn-ghost px-4 py-2 text-xs"
+                  onClick={() => navigate(`/student/session/${sessionId}/cpi`)}
+                >
+                  📊 CPI Builder
+                </button>
+                <button
+                  className="btn-ghost px-4 py-2 text-xs"
+                  onClick={() => navigate(`/student/session/${sessionId}/export`)}
+                >
+                  📄 Export portfolio
+                </button>
+              </div>
+            </div>
           )}
 
           {phase === 'ended' && (
-            <button
-              onClick={() => navigate('/student/join')}
-              className="btn-ghost mt-6 px-6 py-2.5"
-            >
-              Join another session
-            </button>
+            <div className="flex flex-col gap-3 mt-6">
+              <button
+                className="btn-ghost px-6 py-2.5"
+                onClick={() => navigate(`/student/session/${sessionId}/export`)}
+              >
+                📄 Export portfolio
+              </button>
+              <button
+                onClick={() => navigate('/student/join')}
+                className="btn-ghost px-6 py-2.5"
+              >
+                Join another session
+              </button>
+            </div>
           )}
         </div>
       </div>

@@ -10,7 +10,6 @@ const PHASE_COLORS: Record<string, string> = {
   survey: '#E8447A',
   dataset: '#FF6BA8',
   analysis: '#FF9EC8',
-  quiz: '#E8447A',
   ended: '#9090B0',
 }
 
@@ -67,7 +66,7 @@ export default function InstructorDashboard() {
             Welcome back, {user?.name ?? 'Instructor'}
           </h1>
           <p className="text-sm" style={{ color: '#9090B0' }}>
-            Manage your live sessions, surveys, and quizzes from here.
+            Manage your live sessions, surveys, and lecture notes from here.
           </p>
         </div>
 

@@ -12,14 +12,13 @@ import { broadcastSessionEvent } from '@/lib/realtime'
 import { supabase } from '@/lib/supabase'
 import type { Session, SessionStudent, SessionPhase } from '@/types'
 
-const PHASE_ORDER: SessionPhase[] = ['lobby', 'survey', 'dataset', 'analysis', 'quiz', 'ended']
+const PHASE_ORDER: SessionPhase[] = ['lobby', 'survey', 'dataset', 'analysis', 'ended']
 
 const PHASE_LABELS: Record<SessionPhase, string> = {
   lobby: 'Lobby',
   survey: 'Survey',
   dataset: 'Dataset',
   analysis: 'Analysis',
-  quiz: 'Quiz',
   ended: 'Ended',
 }
 
@@ -192,14 +191,20 @@ export default function SessionControl() {
             </p>
           </div>
 
-          {/* Survey management link */}
+          {/* Session management links */}
           {!isEnded && (
-            <div>
+            <div className="flex flex-col gap-2">
               <button
                 onClick={() => navigate(`/instructor/session/${sessionId}/survey`)}
                 className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
               >
                 <span>📋</span> Manage surveys
+              </button>
+              <button
+                onClick={() => navigate(`/instructor/session/${sessionId}/notes`)}
+                className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
+              >
+                <span>📝</span> Lecture notes
               </button>
             </div>
           )}

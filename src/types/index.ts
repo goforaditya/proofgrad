@@ -4,7 +4,7 @@
 
 export type UserRole = 'student' | 'instructor'
 
-export type SessionPhase = 'lobby' | 'survey' | 'dataset' | 'analysis' | 'quiz' | 'ended'
+export type SessionPhase = 'lobby' | 'survey' | 'dataset' | 'analysis' | 'ended'
 
 export type SessionStatus = 'active' | 'ended'
 
@@ -84,33 +84,6 @@ export interface Response {
   submitted_at: string
 }
 
-// Quiz question definition
-export interface QuizQuestion {
-  question: string
-  type: 'mcq' | 'numeric'
-  // For MCQ
-  options?: string[]
-  correct_answer: string | number
-  explanation?: string
-}
-
-export interface Quiz {
-  id: string
-  session_id: string
-  questions: QuizQuestion[]
-  is_active: boolean
-  created_at: string
-}
-
-export interface QuizResponse {
-  id: string
-  quiz_id: string
-  session_student_id: string
-  answers: AnswerMap
-  score: number | null
-  submitted_at: string
-}
-
 // Lecture note content structure
 export interface LectureNoteContent {
   concept?: string
@@ -164,11 +137,6 @@ export interface SurveyLaunchEvent {
   surveyId: string
 }
 
-export interface QuizLaunchEvent {
-  type: 'quiz_launched'
-  quizId: string
-}
-
 export interface ResponseCountEvent {
   type: 'response_count'
   count: number
@@ -177,7 +145,6 @@ export interface ResponseCountEvent {
 export type SessionChannelEvent =
   | SessionPhaseEvent
   | SurveyLaunchEvent
-  | QuizLaunchEvent
 
 // -------------------------------------------------------
 // Analysis types (Phase 4)
