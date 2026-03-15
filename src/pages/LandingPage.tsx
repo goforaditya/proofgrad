@@ -79,8 +79,7 @@ export default function LandingPage() {
           className="text-base sm:text-lg max-w-xl mx-auto mb-6 leading-relaxed"
           style={{ color: '#9090B0' }}
         >
-          AI-powered data analysis platform for the classroom.
-          Build surveys, analyze data, and learn interactively.
+          AI-powered data collection -> analysis
         </p>
         {user ? (
           <button
