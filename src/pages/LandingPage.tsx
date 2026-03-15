@@ -1,52 +1,40 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/lib/auth'
-import { fetchRecentArticles } from '@/hooks/useArticles'
+import { fetchArticles } from '@/hooks/useArticles'
 import type { Article } from '@/types'
-
-const features = [
-  {
-    icon: '📊',
-    title: 'Live Surveys & Data',
-    description:
-      'Run live surveys during lectures. Students respond in real time, building an anonymized class dataset for hands-on analysis.',
-  },
-  {
-    icon: '📈',
-    title: 'Interactive Analysis',
-    description:
-      'Build histograms, scatter plots, demand curves, and more — all from real class data. AI-powered chart interpretations guide learning.',
-  },
-  {
-    icon: '📝',
-    title: 'Blog & Resources',
-    description:
-      'Instructors publish data analytics articles. Students read, discuss, and build a portfolio of their work exportable as PDF.',
-  },
-]
 
 export default function LandingPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [articles, setArticles] = useState<Article[]>([])
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
-    fetchRecentArticles(3).then(setArticles)
+    fetchArticles().then(setArticles)
   }, [])
 
   const dashboardPath =
-    user?.role === 'instructor'
-      ? '/instructor/dashboard'
-      : '/student/join'
+    user?.role === 'instructor' ? '/instructor/dashboard' : '/student/join'
+
+  const filteredArticles = useMemo(() => {
+    if (!search.trim()) return articles.slice(0, 8)
+    const q = search.toLowerCase()
+    return articles
+      .filter((a) => a.title.toLowerCase().includes(q) || a.author_name?.toLowerCase().includes(q))
+      .slice(0, 8)
+  }, [articles, search])
+
+  function readTime(content: string) {
+    return Math.max(1, Math.ceil(content.split(/\s+/).filter(Boolean).length / 200))
+  }
 
   return (
     <div className="liquid-bg min-h-screen">
       <div className="liquid-orb-3" />
 
       {/* Nav */}
-      <nav
-        className="glass-nav sticky top-0 z-40 px-4 sm:px-6 py-3 flex items-center justify-between"
-      >
+      <nav className="glass-nav sticky top-0 z-40 px-4 sm:px-6 py-3 flex items-center justify-between">
         <Link to="/" className="glow-text text-lg font-bold tracking-tight">
           Proofgrad
         </Link>
@@ -82,122 +70,179 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative px-4 sm:px-6 pt-20 pb-24 text-center max-w-4xl mx-auto fade-in-up">
-        <h1
-          className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight"
-          style={{ color: '#F0F0F7' }}
-        >
-          The Interactive{' '}
-          <span className="glow-text">Economics Lab</span>
-          <br />
-          for Your Classroom
+      {/* Hero — compact */}
+      <section className="relative px-4 sm:px-6 pt-14 pb-10 text-center max-w-4xl mx-auto fade-in-up">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 leading-tight">
+          <span className="glow-text-lg">Proofgrad</span>
         </h1>
         <p
-          className="text-base sm:text-lg max-w-2xl mx-auto mb-8 leading-relaxed"
+          className="text-base sm:text-lg max-w-xl mx-auto mb-6 leading-relaxed"
           style={{ color: '#9090B0' }}
         >
-          Run live surveys, build real datasets, and let students discover economics through
-          hands-on data analysis — all in one platform.
+          AI-powered data analysis platform for the classroom.
+          Build surveys, analyze data, and learn interactively.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          {user ? (
-            <button
-              onClick={() => navigate(dashboardPath)}
-              className="btn-liquid px-8 py-3 text-base font-semibold"
-            >
-              Go to Dashboard →
-            </button>
-          ) : (
-            <Link
-              to="/auth/signup"
-              className="btn-liquid px-8 py-3 text-base font-semibold inline-block"
-            >
-              Get Started — Free →
-            </Link>
-          )}
-          <Link
-            to="/blog"
-            className="btn-ghost px-8 py-3 text-base font-semibold inline-block"
+        {user ? (
+          <button
+            onClick={() => navigate(dashboardPath)}
+            className="btn-liquid px-7 py-2.5 text-sm font-semibold"
           >
-            Explore Blog
+            Go to Dashboard →
+          </button>
+        ) : (
+          <Link
+            to="/auth/signup"
+            className="btn-liquid px-7 py-2.5 text-sm font-semibold inline-block"
+          >
+            Get Started — Free →
           </Link>
-        </div>
+        )}
       </section>
 
-      {/* Features */}
-      <section className="px-4 sm:px-6 pb-20 max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {features.map((f) => (
-            <div key={f.title} className="glass p-6 fade-in-up">
-              <div className="text-3xl mb-3">{f.icon}</div>
-              <h3 className="text-base font-semibold mb-2" style={{ color: '#F0F0F7' }}>
-                {f.title}
-              </h3>
+      {/* Main hub grid */}
+      <section className="px-4 sm:px-6 pb-16 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Left: Apps */}
+          <div className="lg:col-span-2 space-y-5">
+            <div className="section-label mb-4">Apps</div>
+
+            {/* Featured app card */}
+            <div
+              className="glass-card-featured p-6 cursor-pointer"
+              onClick={() => navigate(user ? dashboardPath : '/auth/signup')}
+            >
+              <div className="relative z-[1]">
+                <div className="flex items-center gap-3 mb-3">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                    style={{ background: 'rgba(232, 68, 122, 0.15)' }}
+                  >
+                    📊
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold" style={{ color: '#F0F0F7' }}>
+                      Interactive Survey & Analysis
+                    </h3>
+                    <p className="text-xs" style={{ color: '#9090B0' }}>
+                      Live classroom data collection and visualization
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-sm leading-relaxed mb-4" style={{ color: '#9090B0' }}>
+                  Run live surveys during lectures, build anonymized class datasets, and let students
+                  explore data through interactive charts with AI-powered interpretations.
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="feature-pill">📡 Live Surveys</span>
+                  <span className="feature-pill">🤖 AI Charts</span>
+                  <span className="feature-pill">📈 Real-time Data</span>
+                  <span className="feature-pill">📄 PDF Export</span>
+                  <span className="feature-pill">💰 CPI Builder</span>
+                </div>
+
+                <button className="btn-liquid px-5 py-2 text-sm">
+                  Launch →
+                </button>
+              </div>
+            </div>
+
+            {/* Coming soon card */}
+            <div className="glass-card-muted p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                  style={{ background: 'rgba(100, 80, 200, 0.1)' }}
+                >
+                  🔧
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold" style={{ color: '#F0F0F7' }}>
+                    Dashboard Builder
+                  </h3>
+                  <span className="badge-muted text-[10px]">Coming Soon</span>
+                </div>
+              </div>
               <p className="text-sm leading-relaxed" style={{ color: '#9090B0' }}>
-                {f.description}
+                Build custom analytics dashboards from any dataset. Drag-and-drop charts,
+                filters, and KPI cards — share with your class or export as reports.
               </p>
             </div>
-          ))}
+          </div>
+
+          {/* Right: Blog sidebar */}
+          <div className="lg:col-span-1">
+            <div className="flex items-center justify-between mb-4">
+              <div className="section-label">Blog</div>
+              <Link
+                to="/blog"
+                className="text-xs transition-colors hover:text-[#FF6BA8]"
+                style={{ color: '#E8447A' }}
+              >
+                View all →
+              </Link>
+            </div>
+
+            {/* Search */}
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search articles…"
+              className="glass-input w-full px-3 py-2 text-xs mb-4"
+            />
+
+            {/* Article list */}
+            {filteredArticles.length === 0 ? (
+              <div className="glass-card-muted p-6 text-center">
+                <p className="text-xs" style={{ color: '#9090B0' }}>
+                  {articles.length === 0 ? 'No articles yet.' : 'No matches.'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredArticles.map((a) => (
+                  <Link
+                    key={a.id}
+                    to={`/blog/${a.id}`}
+                    className="glass-card p-4 block fade-in-up"
+                  >
+                    <h4 className="text-sm font-semibold mb-1 line-clamp-2" style={{ color: '#F0F0F7' }}>
+                      {a.title}
+                    </h4>
+                    <div className="flex items-center gap-1.5 text-[11px] mb-1.5" style={{ color: '#9090B0' }}>
+                      {a.author_name && <span>{a.author_name}</span>}
+                      <span>·</span>
+                      <span>{new Date(a.published_at).toLocaleDateString()}</span>
+                      <span>·</span>
+                      <span>{readTime(a.content)}m read</span>
+                    </div>
+                    {a.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {a.tags.slice(0, 3).map((tag, i) => (
+                          <span key={i} className="badge-muted text-[9px] px-1.5 py-0.5">{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Recent articles */}
-      {articles.length > 0 && (
-        <section className="px-4 sm:px-6 pb-20 max-w-5xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold" style={{ color: '#F0F0F7' }}>
-              Latest from the Blog
-            </h2>
-            <Link
-              to="/blog"
-              className="text-sm transition-colors hover:text-[#FF6BA8]"
-              style={{ color: '#E8447A' }}
-            >
-              View all →
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {articles.map((a) => (
-              <Link
-                key={a.id}
-                to={`/blog/${a.id}`}
-                className="glass p-5 transition-all hover:scale-[1.02] hover:border-[#E8447A]/40 block fade-in-up"
-              >
-                <h3 className="text-sm font-semibold mb-2 line-clamp-2" style={{ color: '#F0F0F7' }}>
-                  {a.title}
-                </h3>
-                <p className="text-xs mb-3 line-clamp-3" style={{ color: '#9090B0' }}>
-                  {a.content.replace(/[#*`\[\]]/g, '').slice(0, 120)}…
-                </p>
-                <div className="flex items-center gap-2 text-xs" style={{ color: '#9090B0' }}>
-                  {a.author_name && <span>{a.author_name}</span>}
-                  <span>·</span>
-                  <span>{new Date(a.published_at).toLocaleDateString()}</span>
-                </div>
-                {a.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {a.tags.slice(0, 3).map((tag, i) => (
-                      <span key={i} className="badge-muted text-[10px] px-1.5 py-0.5">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Footer */}
-      <footer className="border-t px-4 sm:px-6 py-8" style={{ borderColor: '#2E2E45' }}>
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="border-t px-4 sm:px-6 py-6" style={{ borderColor: '#2E2E45' }}>
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <span className="glow-text text-sm font-bold">Proofgrad</span>
-          <div className="flex gap-6 text-sm" style={{ color: '#9090B0' }}>
+          <div className="flex gap-6 text-xs" style={{ color: '#9090B0' }}>
             <Link to="/blog" className="hover:text-[#F0F0F7] transition-colors">Blog</Link>
             <Link to="/auth/login" className="hover:text-[#F0F0F7] transition-colors">Sign in</Link>
             <Link to="/auth/signup" className="hover:text-[#F0F0F7] transition-colors">Sign up</Link>
           </div>
-          <span className="text-xs" style={{ color: '#9090B0' }}>
+          <span className="text-[10px]" style={{ color: '#9090B0' }}>
             © {new Date().getFullYear()} Proofgrad
           </span>
         </div>

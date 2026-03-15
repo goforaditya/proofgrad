@@ -591,3 +591,147 @@ body {
   border: none;
   box-shadow: 0 0 10px rgba(232, 68, 122, 0.4);
 }
+
+/* ===================================================================
+   ENHANCED GLASS CARDS — for landing page hub
+   =================================================================== */
+
+/* Premium glass card with gradient top edge */
+.glass-card {
+  background: linear-gradient(180deg, rgba(36, 36, 54, 0.7) 0%, rgba(26, 26, 38, 0.5) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gradient shimmer on top edge */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232, 68, 122, 0.3), rgba(100, 80, 200, 0.2), transparent);
+  opacity: 0.6;
+}
+
+.glass-card:hover {
+  border-color: rgba(232, 68, 122, 0.2);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(232, 68, 122, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Featured app card — animated gradient border + persistent glow */
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(232, 68, 122, 0.3); box-shadow: 0 0 30px rgba(232, 68, 122, 0.08), 0 8px 32px rgba(0, 0, 0, 0.4); }
+  50% { border-color: rgba(232, 68, 122, 0.5); box-shadow: 0 0 40px rgba(232, 68, 122, 0.12), 0 12px 40px rgba(0, 0, 0, 0.5); }
+}
+
+.glass-card-featured {
+  background: linear-gradient(180deg, rgba(36, 36, 54, 0.8) 0%, rgba(26, 26, 38, 0.6) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(232, 68, 122, 0.3);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: border-glow 4s ease-in-out infinite;
+}
+
+/* Pink gradient glow on top edge */
+.glass-card-featured::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #E8447A, #FF6BA8, transparent);
+}
+
+/* Background radial glow */
+.glass-card-featured::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 68, 122, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.glass-card-featured:hover {
+  transform: translateY(-2px);
+  border-color: rgba(232, 68, 122, 0.5);
+}
+
+/* Muted card — for "Coming Soon" items */
+.glass-card-muted {
+  background: rgba(26, 26, 38, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.glass-card-muted:hover {
+  opacity: 0.85;
+}
+
+/* ===================================================================
+   SECTION LABEL — uppercase with pink left accent
+   =================================================================== */
+
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9090B0;
+  padding-left: 10px;
+  border-left: 2px solid #E8447A;
+}
+
+/* ===================================================================
+   GLOW TEXT LARGE — hero headline with stronger glow
+   =================================================================== */
+
+.glow-text-lg {
+  color: #E8447A;
+  text-shadow:
+    0 0 20px rgba(232, 68, 122, 0.5),
+    0 0 60px rgba(232, 68, 122, 0.2),
+    0 0 100px rgba(232, 68, 122, 0.1);
+}
+
+/* ===================================================================
+   FEATURE PILL — small rounded tag for feature highlights
+   =================================================================== */
+
+.feature-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: rgba(232, 68, 122, 0.08);
+  color: #FF9EC8;
+  border: 1px solid rgba(232, 68, 122, 0.1);
+}
