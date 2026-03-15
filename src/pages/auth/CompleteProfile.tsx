@@ -48,7 +48,7 @@ export default function CompleteProfile() {
     }
 
     await refreshUser()
-    navigate('/student/join', { replace: true })
+    navigate('/', { replace: true })
   }
 
   return (

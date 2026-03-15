@@ -6,6 +6,7 @@ import LandingPage from '@/pages/LandingPage'
 // Auth pages
 import Login from '@/pages/auth/Login'
 import Signup from '@/pages/auth/Signup'
+import InstructorLogin from '@/pages/auth/InstructorLogin'
 import CompleteProfile from '@/pages/auth/CompleteProfile'
 
 // Layout
@@ -41,6 +42,7 @@ export default function App() {
         {/* Auth routes (public) */}
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/signup" element={<Signup />} />
+        <Route path="/auth/instructor" element={<InstructorLogin />} />
         <Route
           path="/auth/complete-profile"
           element={
@@ -92,7 +94,7 @@ export default function App() {
           }
         />
 
-        {/* Student routes (public — guests allowed) */}
+        {/* User/session routes (public — guests allowed) */}
         <Route path="/student/join" element={<JoinSession />} />
         <Route path="/student/session/:sessionId" element={<SessionView />} />
         <Route path="/student/session/:sessionId/survey" element={<SurveyForm />} />

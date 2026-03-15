@@ -15,7 +15,7 @@ export default function LandingPage() {
   }, [])
 
   const dashboardPath =
-    user?.role === 'instructor' ? '/instructor/dashboard' : '/student/join'
+    user?.role === 'instructor' ? '/instructor/dashboard' : '/'
 
   const filteredArticles = useMemo(() => {
     if (!search.trim()) return articles.slice(0, 8)
@@ -124,14 +124,14 @@ export default function LandingPage() {
                       Interactive Survey & Analysis
                     </h3>
                     <p className="text-xs" style={{ color: '#9090B0' }}>
-                      Live classroom data collection and visualization
+                      Live data collection and visualization
                     </p>
                   </div>
                 </div>
 
                 <p className="text-sm leading-relaxed mb-4" style={{ color: '#9090B0' }}>
-                  Run live surveys during lectures, build anonymized class datasets, and let students
-                  explore data through interactive charts with AI-powered interpretations.
+                  Run live surveys, build anonymized datasets, and explore data through
+                  interactive charts with AI-powered interpretations.
                 </p>
 
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -166,7 +166,7 @@ export default function LandingPage() {
               </div>
               <p className="text-sm leading-relaxed" style={{ color: '#9090B0' }}>
                 Build custom analytics dashboards from any dataset. Drag-and-drop charts,
-                filters, and KPI cards — share with your class or export as reports.
+                filters, and KPI cards — share with your team or export as reports.
               </p>
             </div>
           </div>

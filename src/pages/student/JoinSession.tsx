@@ -93,7 +93,7 @@ export default function JoinSession() {
           Join a Session
         </h1>
         <p className="text-sm mb-8" style={{ color: '#9090B0' }}>
-          Enter the code your instructor gave you, or scan the QR code.
+          Enter the session code or scan the QR code to join.
         </p>
 
         {user && (

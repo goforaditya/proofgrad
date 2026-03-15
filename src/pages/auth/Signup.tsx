@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/lib/auth'
-import type { UserRole } from '@/types'
 
 export default function Signup() {
   const { signUp } = useAuth()
@@ -11,7 +10,6 @@ export default function Signup() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState<UserRole>('student')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -29,7 +27,7 @@ export default function Signup() {
     }
 
     setLoading(true)
-    const { error: err } = await signUp(email, password, name, role)
+    const { error: err } = await signUp(email, password, name, 'student')
 
     if (err) {
       setError(err)
@@ -40,10 +38,8 @@ export default function Signup() {
     // Redirect based on context
     if (redirectParam === 'analysis' && sessionParam) {
       navigate(`/student/analysis?session=${sessionParam}`, { replace: true })
-    } else if (role === 'instructor') {
-      navigate('/instructor/dashboard', { replace: true })
     } else {
-      navigate('/student/join', { replace: true })
+      navigate('/', { replace: true })
     }
   }
 
@@ -57,7 +53,7 @@ export default function Signup() {
         <div className="text-center mb-8">
           <h1 className="glow-text text-3xl font-bold">Proofgrad</h1>
           <p className="mt-2 text-sm" style={{ color: '#9090B0' }}>
-            AI-powered economics learning platform
+            AI-powered data collection &amp; analysis
           </p>
         </div>
 
@@ -66,20 +62,6 @@ export default function Signup() {
           <h2 className="text-xl font-semibold mb-6" style={{ color: '#F0F0F7' }}>
             Create your account
           </h2>
-
-          {/* Role toggle */}
-          <div className="role-toggle-wrap flex gap-1 mb-6">
-            {(['student', 'instructor'] as UserRole[]).map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRole(r)}
-                className={`role-toggle-btn flex-1 py-2 ${role === r ? 'active' : ''}`}
-              >
-                {r === 'student' ? "I'm a Student" : "I'm an Instructor"}
-              </button>
-            ))}
-          </div>
 
           {error && (
             <div className="alert-error mb-4 px-4 py-3 text-sm">
