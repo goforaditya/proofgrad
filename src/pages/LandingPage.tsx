@@ -81,7 +81,7 @@ export default function LandingPage() {
         >
           AI-powered data collection & analysis
         </p>
-        {user ? (
+        {/* {user ? (
           <button
             onClick={() => navigate(dashboardPath)}
             className="btn-liquid px-7 py-2.5 text-sm font-semibold"
@@ -95,7 +95,7 @@ export default function LandingPage() {
           >
             Get Started — Free →
           </Link>
-        )}
+        )} */}
       </section>
 
       {/* Main hub grid */}
