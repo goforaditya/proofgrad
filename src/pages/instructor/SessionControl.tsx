@@ -109,6 +109,10 @@ export default function SessionControl() {
     if (session) navigator.clipboard.writeText(session.join_code)
   }
 
+  function copyLink() {
+    if (joinUrl) navigator.clipboard.writeText(joinUrl)
+  }
+
   if (loading) {
     return (
       <AppShell showSidebar>
@@ -178,6 +182,27 @@ export default function SessionControl() {
             </div>
           </div>
 
+          {/* Join link */}
+          <div>
+            <label className="block text-xs font-medium mb-2" style={{ color: '#9090B0' }}>
+              JOIN LINK
+            </label>
+            <div className="flex items-center gap-2">
+              <span
+                className="glass-input px-3 py-1.5 text-xs font-mono truncate max-w-[260px] inline-block"
+                style={{ color: '#F0F0F7' }}
+              >
+                {joinUrl}
+              </span>
+              <button
+                onClick={copyLink}
+                className="btn-ghost text-xs px-2 py-1 shrink-0"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+
           {/* QR Code */}
           <div>
             <label className="block text-xs font-medium mb-2" style={{ color: '#9090B0' }}>
@@ -187,7 +212,7 @@ export default function SessionControl() {
               <QRCodeSVG value={joinUrl} size={180} level="M" />
             </div>
             <p className="text-xs mt-2" style={{ color: '#9090B0' }}>
-              Students scan to join instantly
+              Scan to join instantly
             </p>
           </div>
 

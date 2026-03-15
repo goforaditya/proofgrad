@@ -9,6 +9,7 @@ import {
   hasStudentResponded,
   uploadScreenshot,
 } from '@/hooks/useSurvey'
+import { fetchMySessionStudent } from '@/hooks/useSession'
 import { broadcastSessionEvent } from '@/lib/realtime'
 import type { Survey, AnswerMap } from '@/types'
 
@@ -17,7 +18,9 @@ export default function SurveyForm() {
   const navigate = useNavigate()
   const { user, guestState } = useAuth()
 
-  const sessionStudentId = guestState?.sessionStudentId ?? null
+  const [sessionStudentId, setSessionStudentId] = useState<string | null>(
+    guestState?.sessionStudentId ?? null
+  )
 
   const [survey, setSurvey] = useState<Survey | null>(null)
   const [loading, setLoading] = useState(true)
@@ -28,6 +31,14 @@ export default function SurveyForm() {
   const [submitted, setSubmitted] = useState(false)
   const [ocrProcessing, setOcrProcessing] = useState(false)
   const [ocrResults, setOcrResults] = useState<Record<number, string>>({})
+
+  // Resolve sessionStudentId for logged-in users who don't have guestState
+  useEffect(() => {
+    if (sessionStudentId || !user || !sessionId) return
+    fetchMySessionStudent(sessionId, user.id).then((stu) => {
+      if (stu) setSessionStudentId(stu.id)
+    })
+  }, [sessionStudentId, user, sessionId])
 
   const loadSurvey = useCallback(async () => {
     if (!sessionId) return
@@ -106,7 +117,11 @@ export default function SurveyForm() {
   }
 
   async function handleSubmit() {
-    if (!survey || !sessionStudentId || submitting) return
+    if (!survey || submitting) return
+    if (!sessionStudentId) {
+      setError('Could not identify your session. Please go back and rejoin the session.')
+      return
+    }
 
     // Validate required answers
     const unanswered = survey.questions.findIndex((q, i) => {
@@ -182,7 +197,7 @@ export default function SurveyForm() {
               Response submitted!
             </h1>
             <p className="text-sm mb-6" style={{ color: '#9090B0' }}>
-              Your answers have been recorded. Wait for the instructor to release the dataset.
+              Your answers have been recorded. The dataset will be available once the survey closes.
             </p>
             <button
               onClick={() => navigate(`/student/session/${sessionId}`)}

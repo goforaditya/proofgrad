@@ -124,6 +124,23 @@ export async function joinSession(
 }
 
 /**
+ * Look up the session_student record for an authenticated user in a given session.
+ */
+export async function fetchMySessionStudent(
+  sessionId: string,
+  userId: string
+): Promise<SessionStudent | null> {
+  const { data } = await supabase
+    .from('session_students')
+    .select('*')
+    .eq('session_id', sessionId)
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  return (data as SessionStudent) ?? null
+}
+
+/**
  * Fetch all students in a session.
  */
 export async function fetchSessionStudents(
