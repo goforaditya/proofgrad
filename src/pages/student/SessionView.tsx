@@ -78,11 +78,11 @@ export default function SessionView() {
     return (
       <AppShell>
         <div className="text-center py-20">
-          <p style={{ color: '#FF6BA8' }}>{error ?? 'Session not found'}</p>
+          <p style={{ color: '#818CF8' }}>{error ?? 'Session not found'}</p>
           <button
             onClick={() => navigate('/student/join')}
             className="mt-4 text-sm underline"
-            style={{ color: '#E8447A' }}
+            style={{ color: '#635BFF' }}
           >
             Join a different session
           </button>
@@ -108,7 +108,7 @@ export default function SessionView() {
           </div>
 
           <div className="flex items-center gap-2 text-sm mb-1" style={{ color: '#9090B0' }}>
-            <span style={{ color: '#E8447A' }}>●</span>
+            <span style={{ color: '#635BFF' }}>●</span>
             Joined as <strong style={{ color: '#F0F0F7' }}>{displayName}</strong>
           </div>
 

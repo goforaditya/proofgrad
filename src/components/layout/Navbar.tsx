@@ -123,7 +123,7 @@ export default function Navbar() {
                 <button
                   onClick={() => { handleSignOut(); setMenuOpen(false) }}
                   className="text-sm py-2 text-left"
-                  style={{ color: '#E8447A' }}
+                  style={{ color: '#635BFF' }}
                 >
                   Sign out
                 </button>
@@ -133,7 +133,7 @@ export default function Navbar() {
             <Link
               to="/auth/login"
               className="text-sm font-medium"
-              style={{ color: '#E8447A' }}
+              style={{ color: '#635BFF' }}
               onClick={() => setMenuOpen(false)}
             >
               Sign in

@@ -239,7 +239,7 @@ export default function SurveyForm() {
                 {survey.title}
               </h1>
               <p className="text-xs" style={{ color: '#9090B0' }}>
-                Answering as <strong style={{ color: '#E8447A' }}>{displayName}</strong>
+                Answering as <strong style={{ color: '#635BFF' }}>{displayName}</strong>
               </p>
             </div>
             <span className="badge-glow">LIVE</span>
@@ -260,7 +260,7 @@ export default function SurveyForm() {
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${progress}%`,
-                background: 'linear-gradient(90deg, #E8447A, #FF6BA8)',
+                background: 'linear-gradient(90deg, #635BFF, #818CF8)',
                 boxShadow: '0 0 10px rgba(232,68,122,0.3)',
               }}
             />
@@ -301,7 +301,7 @@ export default function SurveyForm() {
         {/* OCR results display */}
         {Object.keys(ocrResults).length > 0 && (
           <div className="glass p-4 mb-4 fade-in-up">
-            <p className="text-xs font-medium mb-2" style={{ color: '#E8447A' }}>
+            <p className="text-xs font-medium mb-2" style={{ color: '#635BFF' }}>
               📊 Extracted from screenshot
             </p>
             {Object.entries(ocrResults).map(([idx, text]) => {

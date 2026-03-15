@@ -379,7 +379,7 @@ export default function AnalysisWorkspace() {
                   </p>
                   <span
                     className="text-[10px] mt-2 inline-block opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ color: '#E8447A' }}
+                    style={{ color: '#635BFF' }}
                   >
                     Click to generate →
                   </span>

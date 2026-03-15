@@ -54,10 +54,10 @@ export default function InstructorSidebar({ collapsed = false, onToggle }: Props
             }
             style={({ isActive }) => ({
               background: isActive
-                ? 'linear-gradient(135deg, #E8447A, #C42E60)'
+                ? 'linear-gradient(135deg, #635BFF, #4F46E5)'
                 : 'transparent',
               color: isActive ? '#fff' : '#9090B0',
-              boxShadow: isActive ? '0 2px 12px rgba(232, 68, 122, 0.3)' : 'none',
+              boxShadow: isActive ? '0 2px 12px rgba(99, 91, 255, 0.3)' : 'none',
             })}
           >
             <span className="text-base flex-shrink-0">{item.icon}</span>

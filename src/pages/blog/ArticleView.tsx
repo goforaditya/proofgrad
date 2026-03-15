@@ -39,7 +39,7 @@ export default function ArticleView() {
           <button
             onClick={() => navigate('/blog')}
             className="mt-4 text-sm underline"
-            style={{ color: '#E8447A' }}
+            style={{ color: '#635BFF' }}
           >
             Back to blog
           </button>

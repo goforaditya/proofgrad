@@ -25,7 +25,7 @@ export default function BarChartView({ values }: Props) {
 
   const maxCount = Math.max(...data.map((d) => d.count))
 
-  const COLORS = ['#E8447A', '#FF6BA8', '#C42E60', '#FF9EC8', '#A03560', '#FFB8D8']
+  const COLORS = ['#635BFF', '#818CF8', '#4F46E5', '#A5B4FC', '#A03560', '#FFB8D8']
 
   return (
     <div>
@@ -47,12 +47,12 @@ export default function BarChartView({ values }: Props) {
           <Tooltip
             contentStyle={{
               background: 'rgba(26, 26, 38, 0.95)',
-              border: '1px solid rgba(232, 68, 122, 0.2)',
+              border: '1px solid rgba(99, 91, 255, 0.2)',
               borderRadius: 12,
               color: '#F0F0F7',
               fontSize: 13,
             }}
-            cursor={{ fill: 'rgba(232, 68, 122, 0.08)' }}
+            cursor={{ fill: 'rgba(99, 91, 255, 0.08)' }}
           />
           <Bar dataKey="count" radius={[6, 6, 0, 0]}>
             {data.map((entry, i) => (

@@ -24,7 +24,7 @@ export default function QuestionRenderer({
       <div className="flex items-start gap-3 mb-3">
         <span
           className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
-          style={{ background: 'rgba(232, 68, 122, 0.15)', color: '#E8447A' }}
+          style={{ background: 'rgba(99, 91, 255, 0.15)', color: '#635BFF' }}
         >
           {index + 1}
         </span>
@@ -50,7 +50,7 @@ export default function QuestionRenderer({
           <div>
             <div className="flex justify-between text-xs mb-2" style={{ color: '#9090B0' }}>
               <span>{question.min ?? 0}</span>
-              <span className="font-bold text-sm" style={{ color: '#E8447A' }}>
+              <span className="font-bold text-sm" style={{ color: '#635BFF' }}>
                 {value ?? question.min ?? 0}
               </span>
               <span>{question.max ?? 100}</span>
@@ -80,10 +80,10 @@ export default function QuestionRenderer({
                   className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-left transition-all duration-200"
                   style={{
                     background: isSelected
-                      ? 'rgba(232, 68, 122, 0.12)'
+                      ? 'rgba(99, 91, 255, 0.12)'
                       : 'rgba(13, 13, 18, 0.4)',
                     border: `1px solid ${
-                      isSelected ? 'rgba(232, 68, 122, 0.4)' : 'rgba(255, 255, 255, 0.06)'
+                      isSelected ? 'rgba(99, 91, 255, 0.4)' : 'rgba(255, 255, 255, 0.06)'
                     }`,
                     color: isSelected ? '#F0F0F7' : '#9090B0',
                   }}
@@ -91,8 +91,8 @@ export default function QuestionRenderer({
                   <span
                     className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] flex-shrink-0 font-bold"
                     style={{
-                      border: `2px solid ${isSelected ? '#E8447A' : 'rgba(144,144,176,0.3)'}`,
-                      background: isSelected ? '#E8447A' : 'transparent',
+                      border: `2px solid ${isSelected ? '#635BFF' : 'rgba(144,144,176,0.3)'}`,
+                      background: isSelected ? '#635BFF' : 'transparent',
                       color: isSelected ? '#fff' : '#9090B0',
                     }}
                   >
@@ -121,10 +121,10 @@ export default function QuestionRenderer({
                   className="w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-200"
                   style={{
                     background: isSelected
-                      ? 'linear-gradient(135deg, #E8447A, #C42E60)'
+                      ? 'linear-gradient(135deg, #635BFF, #4F46E5)'
                       : 'rgba(13, 13, 18, 0.4)',
                     border: `1px solid ${
-                      isSelected ? 'rgba(232, 68, 122, 0.4)' : 'rgba(255, 255, 255, 0.06)'
+                      isSelected ? 'rgba(99, 91, 255, 0.4)' : 'rgba(255, 255, 255, 0.06)'
                     }`,
                     color: isSelected ? '#fff' : '#9090B0',
                     boxShadow: isSelected ? '0 0 12px rgba(232,68,122,0.3)' : 'none',
@@ -158,8 +158,8 @@ export default function QuestionRenderer({
               onClick={() => fileRef.current?.click()}
               className="w-full py-6 rounded-xl text-sm transition-all duration-200 flex flex-col items-center gap-2"
               style={{
-                background: fileName ? 'rgba(232, 68, 122, 0.08)' : 'rgba(13, 13, 18, 0.4)',
-                border: `2px dashed ${fileName ? 'rgba(232, 68, 122, 0.3)' : 'rgba(255, 255, 255, 0.08)'}`,
+                background: fileName ? 'rgba(99, 91, 255, 0.08)' : 'rgba(13, 13, 18, 0.4)',
+                border: `2px dashed ${fileName ? 'rgba(99, 91, 255, 0.3)' : 'rgba(255, 255, 255, 0.08)'}`,
                 color: fileName ? '#F0F0F7' : '#9090B0',
               }}
             >

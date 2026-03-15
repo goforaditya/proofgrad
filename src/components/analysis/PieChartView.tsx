@@ -13,7 +13,7 @@ interface Props {
   label: string
 }
 
-const COLORS = ['#E8447A', '#FF6BA8', '#C42E60', '#FF9EC8', '#A03560', '#FFB8D8', '#8B2050', '#FF80B0']
+const COLORS = ['#635BFF', '#818CF8', '#4F46E5', '#A5B4FC', '#A03560', '#FFB8D8', '#8B2050', '#FF80B0']
 
 export default function PieChartView({ values }: Props) {
   const data = useMemo(() => {
@@ -54,7 +54,7 @@ export default function PieChartView({ values }: Props) {
           <Tooltip
             contentStyle={{
               background: 'rgba(26, 26, 38, 0.95)',
-              border: '1px solid rgba(232, 68, 122, 0.2)',
+              border: '1px solid rgba(99, 91, 255, 0.2)',
               borderRadius: 12,
               color: '#F0F0F7',
               fontSize: 13,

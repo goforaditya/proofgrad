@@ -160,7 +160,7 @@ export default function Signup() {
             <Link
               to="/auth/login"
               className="font-medium hover:underline"
-              style={{ color: '#E8447A' }}
+              style={{ color: '#635BFF' }}
             >
               Sign in
             </Link>

@@ -81,7 +81,7 @@ export default function CommentSection({ articleId }: Props) {
               <div className="flex items-center gap-2 mb-1.5">
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
-                  style={{ background: 'linear-gradient(135deg, #E8447A, #C42E60)', color: '#fff' }}
+                  style={{ background: 'linear-gradient(135deg, #635BFF, #4F46E5)', color: '#fff' }}
                 >
                   {(c.user_name ?? 'A').charAt(0).toUpperCase()}
                 </div>
@@ -97,7 +97,7 @@ export default function CommentSection({ articleId }: Props) {
                 {user?.id === c.user_id && (
                   <button
                     onClick={() => handleDelete(c.id)}
-                    className="ml-auto text-xs transition-colors hover:text-[#FF6BA8]"
+                    className="ml-auto text-xs transition-colors hover:text-[#818CF8]"
                     style={{ color: '#9090B0' }}
                   >
                     Delete
@@ -139,8 +139,8 @@ export default function CommentSection({ articleId }: Props) {
           </p>
           <Link
             to="/auth/login"
-            className="text-sm font-medium underline transition-colors hover:text-[#FF6BA8]"
-            style={{ color: '#E8447A' }}
+            className="text-sm font-medium underline transition-colors hover:text-[#818CF8]"
+            style={{ color: '#635BFF' }}
           >
             Sign in →
           </Link>

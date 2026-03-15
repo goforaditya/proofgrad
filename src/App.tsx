@@ -124,7 +124,7 @@ function Unauthorized() {
         <p className="text-sm mb-4" style={{ color: '#9090B0' }}>
           You don't have permission to view this page.
         </p>
-        <a href="/" className="text-sm font-medium" style={{ color: '#E8447A' }}>← Go home</a>
+        <a href="/" className="text-sm font-medium" style={{ color: '#635BFF' }}>← Go home</a>
       </div>
     </div>
   )
@@ -136,7 +136,7 @@ function NotFound() {
       <div className="liquid-orb-3" />
       <div className="glass-strong p-8 text-center relative z-[1] fade-in-up max-w-sm">
         <h1 className="text-2xl font-bold mb-2" style={{ color: '#F0F0F7' }}>404 — Page Not Found</h1>
-        <a href="/" className="text-sm font-medium" style={{ color: '#E8447A' }}>← Go home</a>
+        <a href="/" className="text-sm font-medium" style={{ color: '#635BFF' }}>← Go home</a>
       </div>
     </div>
   )

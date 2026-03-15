@@ -74,7 +74,7 @@ export default function DemandCurve({ priceValues, label = 'Price' }: Props) {
         />
         <span
           className="text-sm font-bold min-w-[60px] text-right"
-          style={{ color: '#E8447A' }}
+          style={{ color: '#635BFF' }}
         >
           ₹{sliderPrice}
         </span>
@@ -102,7 +102,7 @@ export default function DemandCurve({ priceValues, label = 'Price' }: Props) {
           <Tooltip
             contentStyle={{
               background: 'rgba(26, 26, 38, 0.95)',
-              border: '1px solid rgba(232, 68, 122, 0.2)',
+              border: '1px solid rgba(99, 91, 255, 0.2)',
               borderRadius: 12,
               color: '#F0F0F7',
               fontSize: 13,
@@ -112,9 +112,9 @@ export default function DemandCurve({ priceValues, label = 'Price' }: Props) {
           <Area
             type="stepAfter"
             dataKey="price"
-            stroke="#E8447A"
+            stroke="#635BFF"
             strokeWidth={2}
-            fill="rgba(232, 68, 122, 0.15)"
+            fill="rgba(99, 91, 255, 0.15)"
           />
           {/* Price line */}
           <ReferenceLine
@@ -124,7 +124,7 @@ export default function DemandCurve({ priceValues, label = 'Price' }: Props) {
             strokeWidth={2}
             label={{
               value: `P = ₹${sliderPrice}`,
-              fill: '#FF9EC8',
+              fill: '#A5B4FC',
               fontSize: 11,
               position: 'right',
             }}
@@ -138,7 +138,7 @@ export default function DemandCurve({ priceValues, label = 'Price' }: Props) {
           Quantity demanded: <strong style={{ color: '#F0F0F7' }}>{quantityAtPrice}</strong>
         </span>
         <span>
-          Consumer surplus: <strong style={{ color: '#FF9EC8' }}>₹{consumerSurplus.toFixed(0)}</strong>
+          Consumer surplus: <strong style={{ color: '#A5B4FC' }}>₹{consumerSurplus.toFixed(0)}</strong>
         </span>
         <span>
           Revenue: <strong style={{ color: '#F0F0F7' }}>₹{(sliderPrice * quantityAtPrice).toFixed(0)}</strong>

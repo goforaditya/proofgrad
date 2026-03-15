@@ -164,7 +164,7 @@ export default function PortfolioExport() {
             <div className="flex items-center gap-4 mb-4">
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold"
-                style={{ background: 'linear-gradient(135deg, #E8447A, #C42E60)', color: '#fff' }}
+                style={{ background: 'linear-gradient(135deg, #635BFF, #4F46E5)', color: '#fff' }}
               >
                 {(user?.name ?? 'S').charAt(0).toUpperCase()}
               </div>
@@ -197,9 +197,9 @@ export default function PortfolioExport() {
                     <div
                       key={col.index}
                       className="rounded-xl p-3"
-                      style={{ background: 'rgba(232, 68, 122, 0.04)', border: '1px solid rgba(232, 68, 122, 0.08)' }}
+                      style={{ background: 'rgba(99, 91, 255, 0.04)', border: '1px solid rgba(99, 91, 255, 0.08)' }}
                     >
-                      <div className="text-xs font-medium mb-2" style={{ color: '#E8447A' }}>
+                      <div className="text-xs font-medium mb-2" style={{ color: '#635BFF' }}>
                         {col.label}
                       </div>
                       <div className="grid grid-cols-2 gap-1 text-xs" style={{ color: '#9090B0' }}>
@@ -224,14 +224,14 @@ export default function PortfolioExport() {
               <div className="space-y-4">
                 {notes.map((n) => (
                   <div key={n.id}>
-                    <div className="text-xs font-medium mb-1" style={{ color: '#E8447A' }}>
+                    <div className="text-xs font-medium mb-1" style={{ color: '#635BFF' }}>
                       {n.phase.charAt(0).toUpperCase() + n.phase.slice(1)} Phase
                     </div>
                     {n.content.concept && (
                       <p className="text-sm mb-1" style={{ color: '#F0F0F7' }}>{n.content.concept}</p>
                     )}
                     {n.content.formula && (
-                      <p className="text-xs font-mono mb-1" style={{ color: '#FF9EC8' }}>{n.content.formula}</p>
+                      <p className="text-xs font-mono mb-1" style={{ color: '#A5B4FC' }}>{n.content.formula}</p>
                     )}
                     {n.content.task && (
                       <p className="text-xs" style={{ color: '#9090B0' }}>Task: {n.content.task}</p>

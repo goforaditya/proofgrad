@@ -64,13 +64,13 @@ export default function ChartCard({ title, chartType, chartData, stats, children
         <div
           className="rounded-xl px-4 py-3 text-sm"
           style={{
-            background: 'rgba(232, 68, 122, 0.04)',
-            border: '1px solid rgba(232, 68, 122, 0.08)',
-            color: '#FF9EC8',
+            background: 'rgba(99, 91, 255, 0.04)',
+            border: '1px solid rgba(99, 91, 255, 0.08)',
+            color: '#A5B4FC',
           }}
         >
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-xs font-medium" style={{ color: '#E8447A' }}>
+            <span className="text-xs font-medium" style={{ color: '#635BFF' }}>
               {useAI ? '✨ AI Interpretation' : '📊 Interpretation'}
             </span>
             {loading && <div className="liquid-spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />}

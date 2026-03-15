@@ -98,7 +98,7 @@ export default function JoinSession() {
 
         {user && (
           <div className="glass mb-6 px-4 py-3 text-sm flex items-center gap-2">
-            <span style={{ color: '#E8447A' }}>●</span>
+            <span style={{ color: '#635BFF' }}>●</span>
             <span style={{ color: '#9090B0' }}>
               Signed in as{' '}
               <strong style={{ color: '#F0F0F7' }}>
@@ -163,7 +163,7 @@ export default function JoinSession() {
             <a
               href="/auth/login"
               className="font-medium"
-              style={{ color: '#E8447A' }}
+              style={{ color: '#635BFF' }}
             >
               Sign in
             </a>

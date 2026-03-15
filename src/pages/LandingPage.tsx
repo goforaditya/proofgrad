@@ -79,7 +79,7 @@ export default function LandingPage() {
           className="text-base sm:text-lg max-w-xl mx-auto mb-6 leading-relaxed"
           style={{ color: '#9090B0' }}
         >
-          AI-powered data collection -> analysis
+          AI-powered data collection & analysis
         </p>
         {user ? (
           <button
@@ -100,10 +100,10 @@ export default function LandingPage() {
 
       {/* Main hub grid */}
       <section className="px-4 sm:px-6 pb-16 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* Left: Apps */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="space-y-5">
             <div className="section-label mb-4">Apps</div>
 
             {/* Featured app card */}
@@ -115,7 +115,7 @@ export default function LandingPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-                    style={{ background: 'rgba(232, 68, 122, 0.15)' }}
+                    style={{ background: 'rgba(99, 91, 255, 0.15)' }}
                   >
                     📊
                   </div>
@@ -177,8 +177,8 @@ export default function LandingPage() {
               <div className="section-label">Blog</div>
               <Link
                 to="/blog"
-                className="text-xs transition-colors hover:text-[#FF6BA8]"
-                style={{ color: '#E8447A' }}
+                className="text-xs transition-colors hover:text-[#818CF8]"
+                style={{ color: '#635BFF' }}
               >
                 View all →
               </Link>

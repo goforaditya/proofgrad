@@ -50,12 +50,12 @@ export default function HistogramChart({ values, binCount = 8 }: Props) {
           <Tooltip
             contentStyle={{
               background: 'rgba(26, 26, 38, 0.95)',
-              border: '1px solid rgba(232, 68, 122, 0.2)',
+              border: '1px solid rgba(99, 91, 255, 0.2)',
               borderRadius: 12,
               color: '#F0F0F7',
               fontSize: 13,
             }}
-            cursor={{ fill: 'rgba(232, 68, 122, 0.08)' }}
+            cursor={{ fill: 'rgba(99, 91, 255, 0.08)' }}
           />
           <Bar dataKey="count" radius={[6, 6, 0, 0]}>
             {bins.map((entry, i) => (
@@ -63,8 +63,8 @@ export default function HistogramChart({ values, binCount = 8 }: Props) {
                 key={i}
                 fill={
                   entry.count === maxCount
-                    ? '#E8447A'
-                    : 'rgba(232, 68, 122, 0.5)'
+                    ? '#635BFF'
+                    : 'rgba(99, 91, 255, 0.5)'
                 }
               />
             ))}

@@ -42,7 +42,7 @@ export default function LineChartView({ values }: Props) {
           <Tooltip
             contentStyle={{
               background: 'rgba(26, 26, 38, 0.95)',
-              border: '1px solid rgba(232, 68, 122, 0.2)',
+              border: '1px solid rgba(99, 91, 255, 0.2)',
               borderRadius: 12,
               color: '#F0F0F7',
               fontSize: 13,
@@ -51,10 +51,10 @@ export default function LineChartView({ values }: Props) {
           <Line
             type="monotone"
             dataKey="count"
-            stroke="#E8447A"
+            stroke="#635BFF"
             strokeWidth={2}
-            dot={{ fill: '#E8447A', r: 4, strokeWidth: 0 }}
-            activeDot={{ fill: '#FF6BA8', r: 6, strokeWidth: 0 }}
+            dot={{ fill: '#635BFF', r: 4, strokeWidth: 0 }}
+            activeDot={{ fill: '#818CF8', r: 6, strokeWidth: 0 }}
           />
         </LineChart>
       </ResponsiveContainer>

@@ -123,11 +123,11 @@ export default function SessionControl() {
     return (
       <AppShell showSidebar>
         <div className="text-center py-20">
-          <p style={{ color: '#FF6BA8' }}>{error ?? 'Session not found'}</p>
+          <p style={{ color: '#818CF8' }}>{error ?? 'Session not found'}</p>
           <button
             onClick={() => navigate('/instructor/dashboard')}
             className="mt-4 text-sm underline"
-            style={{ color: '#E8447A' }}
+            style={{ color: '#635BFF' }}
           >
             Back to dashboard
           </button>
@@ -244,7 +244,7 @@ export default function SessionControl() {
                 className="btn-liquid w-full py-2.5"
                 style={
                   currentIdx === PHASE_ORDER.length - 2
-                    ? { background: 'linear-gradient(135deg, #C42E60, #8B1A3E)' }
+                    ? { background: 'linear-gradient(135deg, #4F46E5, #8B1A3E)' }
                     : undefined
                 }
               >

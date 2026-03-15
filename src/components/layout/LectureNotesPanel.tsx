@@ -60,7 +60,7 @@ export default function LectureNotesPanel({ sessionId, phase }: Props) {
       {/* Concept */}
       {c.concept && (
         <div>
-          <h4 className="text-[10px] uppercase tracking-wider font-medium mb-1.5" style={{ color: '#E8447A' }}>
+          <h4 className="text-[10px] uppercase tracking-wider font-medium mb-1.5" style={{ color: '#635BFF' }}>
             Concept
           </h4>
           <p className="text-sm leading-relaxed" style={{ color: '#F0F0F7' }}>
@@ -73,12 +73,12 @@ export default function LectureNotesPanel({ sessionId, phase }: Props) {
       {c.formula && (
         <div
           className="rounded-lg px-3 py-2"
-          style={{ background: 'rgba(232, 68, 122, 0.06)', border: '1px solid rgba(232, 68, 122, 0.1)' }}
+          style={{ background: 'rgba(99, 91, 255, 0.06)', border: '1px solid rgba(99, 91, 255, 0.1)' }}
         >
-          <h4 className="text-[10px] uppercase tracking-wider font-medium mb-1" style={{ color: '#E8447A' }}>
+          <h4 className="text-[10px] uppercase tracking-wider font-medium mb-1" style={{ color: '#635BFF' }}>
             Formula
           </h4>
-          <p className="text-sm font-mono" style={{ color: '#FF9EC8' }}>
+          <p className="text-sm font-mono" style={{ color: '#A5B4FC' }}>
             {c.formula}
           </p>
         </div>
@@ -87,7 +87,7 @@ export default function LectureNotesPanel({ sessionId, phase }: Props) {
       {/* Task */}
       {c.task && (
         <div>
-          <h4 className="text-[10px] uppercase tracking-wider font-medium mb-1.5" style={{ color: '#E8447A' }}>
+          <h4 className="text-[10px] uppercase tracking-wider font-medium mb-1.5" style={{ color: '#635BFF' }}>
             Task
           </h4>
           <p className="text-sm" style={{ color: '#9090B0' }}>
@@ -125,7 +125,7 @@ export default function LectureNotesPanel({ sessionId, phase }: Props) {
       {/* Checklist */}
       {c.checklist && c.checklist.length > 0 && (
         <div>
-          <h4 className="text-[10px] uppercase tracking-wider font-medium mb-2" style={{ color: '#E8447A' }}>
+          <h4 className="text-[10px] uppercase tracking-wider font-medium mb-2" style={{ color: '#635BFF' }}>
             Checklist
           </h4>
           <div className="flex flex-col gap-1.5">
@@ -139,7 +139,7 @@ export default function LectureNotesPanel({ sessionId, phase }: Props) {
                   onClick={() => toggleCheck(i)}
                   className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-all"
                   style={{
-                    background: checklist[i] ? '#E8447A' : 'rgba(46, 46, 69, 0.5)',
+                    background: checklist[i] ? '#635BFF' : 'rgba(46, 46, 69, 0.5)',
                     border: checklist[i] ? 'none' : '1px solid rgba(255,255,255,0.1)',
                   }}
                 >

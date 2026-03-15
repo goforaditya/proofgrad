@@ -196,9 +196,9 @@ export default function DatasetView() {
         <div
           className="rounded-xl px-4 py-3 mb-4 text-sm flex items-center gap-2 fade-in-up"
           style={{
-            background: 'rgba(232, 68, 122, 0.06)',
-            border: '1px solid rgba(232, 68, 122, 0.12)',
-            color: '#FF9EC8',
+            background: 'rgba(99, 91, 255, 0.06)',
+            border: '1px solid rgba(99, 91, 255, 0.12)',
+            color: '#A5B4FC',
           }}
         >
           <span>💡</span>
@@ -228,7 +228,7 @@ export default function DatasetView() {
                       <span className="flex items-center gap-1">
                         {col}
                         {sortCol === i && (
-                          <span style={{ color: '#E8447A' }}>
+                          <span style={{ color: '#635BFF' }}>
                             {sortDir === 'asc' ? '↑' : '↓'}
                           </span>
                         )}
@@ -245,7 +245,7 @@ export default function DatasetView() {
                       key={row.rowNum}
                       style={{
                         background: isMe
-                          ? 'rgba(232, 68, 122, 0.08)'
+                          ? 'rgba(99, 91, 255, 0.08)'
                           : 'transparent',
                         borderBottom: '1px solid rgba(255,255,255,0.03)',
                       }}
@@ -256,7 +256,7 @@ export default function DatasetView() {
                           {isMe && (
                             <span
                               className="w-2 h-2 rounded-full inline-block"
-                              style={{ background: '#E8447A' }}
+                              style={{ background: '#635BFF' }}
                               title="Your response"
                             />
                           )}

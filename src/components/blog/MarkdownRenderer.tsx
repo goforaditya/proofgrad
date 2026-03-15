@@ -21,12 +21,12 @@ const markdownComponents = {
     <strong style={{ color: '#F0F0F7' }}>{children}</strong>
   ),
   em: ({ children }: { children?: React.ReactNode }) => (
-    <em style={{ color: '#FF9EC8' }}>{children}</em>
+    <em style={{ color: '#A5B4FC' }}>{children}</em>
   ),
   code: ({ children }: { children?: React.ReactNode }) => (
     <code
       className="text-xs px-1.5 py-0.5 rounded font-mono"
-      style={{ background: 'rgba(232, 68, 122, 0.1)', color: '#FF9EC8' }}
+      style={{ background: 'rgba(99, 91, 255, 0.1)', color: '#A5B4FC' }}
     >
       {children}
     </code>
@@ -51,7 +51,7 @@ const markdownComponents = {
   blockquote: ({ children }: { children?: React.ReactNode }) => (
     <blockquote
       className="border-l-2 pl-4 my-3 italic"
-      style={{ borderColor: '#E8447A', color: '#9090B0' }}
+      style={{ borderColor: '#635BFF', color: '#9090B0' }}
     >
       {children}
     </blockquote>
@@ -61,8 +61,8 @@ const markdownComponents = {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="underline transition-colors hover:text-[#FF6BA8]"
-      style={{ color: '#E8447A' }}
+      className="underline transition-colors hover:text-[#818CF8]"
+      style={{ color: '#635BFF' }}
     >
       {children}
     </a>

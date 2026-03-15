@@ -92,16 +92,16 @@ export default function ScatterChartView({ xValues, yValues, xLabel, yLabel }: P
           <Tooltip
             contentStyle={{
               background: 'rgba(26, 26, 38, 0.95)',
-              border: '1px solid rgba(232, 68, 122, 0.2)',
+              border: '1px solid rgba(99, 91, 255, 0.2)',
               borderRadius: 12,
               color: '#F0F0F7',
               fontSize: 13,
             }}
-            cursor={{ strokeDasharray: '3 3', stroke: 'rgba(232, 68, 122, 0.3)' }}
+            cursor={{ strokeDasharray: '3 3', stroke: 'rgba(99, 91, 255, 0.3)' }}
           />
           <Scatter
             dataKey="y"
-            fill="#E8447A"
+            fill="#635BFF"
             fillOpacity={0.7}
             r={5}
           />

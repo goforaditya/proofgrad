@@ -7,9 +7,9 @@ import type { Session } from '@/types'
 
 const PHASE_COLORS: Record<string, string> = {
   lobby: '#9090B0',
-  survey: '#E8447A',
-  dataset: '#FF6BA8',
-  analysis: '#FF9EC8',
+  survey: '#635BFF',
+  dataset: '#818CF8',
+  analysis: '#A5B4FC',
   ended: '#9090B0',
 }
 
@@ -127,7 +127,7 @@ export default function InstructorDashboard() {
               </div>
 
               {error && (
-                <p className="text-sm mb-4" style={{ color: '#FF6BA8' }}>{error}</p>
+                <p className="text-sm mb-4" style={{ color: '#818CF8' }}>{error}</p>
               )}
 
               <div className="flex gap-3">
@@ -173,7 +173,7 @@ export default function InstructorDashboard() {
                 <button
                   key={s.id}
                   onClick={() => navigate(`/instructor/session/${s.id}`)}
-                  className="glass p-4 text-left transition-all hover:scale-[1.02] hover:border-[#E8447A]/40"
+                  className="glass p-4 text-left transition-all hover:scale-[1.02] hover:border-[#635BFF]/40"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-sm truncate" style={{ color: '#F0F0F7' }}>

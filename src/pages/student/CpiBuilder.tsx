@@ -77,7 +77,7 @@ export default function CpiBuilder() {
 
   // Comparison chart data
   const comparisonData = [
-    { name: 'Your CPI', value: studentCpi, fill: '#E8447A' },
+    { name: 'Your CPI', value: studentCpi, fill: '#635BFF' },
     { name: 'Official CPI', value: officialCpi, fill: '#9090B0' },
   ]
 
@@ -190,7 +190,7 @@ export default function CpiBuilder() {
               <div className="text-center py-4">
                 <div
                   className="text-5xl font-bold mb-1"
-                  style={{ color: weightValid ? '#E8447A' : '#9090B0' }}
+                  style={{ color: weightValid ? '#635BFF' : '#9090B0' }}
                 >
                   {weightValid ? studentCpi.toFixed(1) : '—'}
                 </div>
@@ -237,7 +237,7 @@ export default function CpiBuilder() {
                   <Tooltip
                     contentStyle={{
                       background: 'rgba(26, 26, 38, 0.95)',
-                      border: '1px solid rgba(232, 68, 122, 0.2)',
+                      border: '1px solid rgba(99, 91, 255, 0.2)',
                       borderRadius: 12,
                       color: '#F0F0F7',
                       fontSize: 13,
@@ -254,7 +254,7 @@ export default function CpiBuilder() {
               <div className="text-xs text-center mt-2" style={{ color: '#9090B0' }}>
                 {weightValid && (
                   <>
-                    Difference: <strong style={{ color: studentCpi > officialCpi ? '#FF6BA8' : '#9090B0' }}>
+                    Difference: <strong style={{ color: studentCpi > officialCpi ? '#818CF8' : '#9090B0' }}>
                       {studentCpi > officialCpi ? '+' : ''}{(studentCpi - officialCpi).toFixed(1)}
                     </strong>
                     {studentCpi > officialCpi

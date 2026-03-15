@@ -218,7 +218,7 @@ export default function SurveyBuilder() {
             {/* Response counter */}
             <div
               className="rounded-xl p-4 mb-4 text-center"
-              style={{ background: 'rgba(232, 68, 122, 0.06)', border: '1px solid rgba(232,68,122,0.12)' }}
+              style={{ background: 'rgba(99, 91, 255, 0.06)', border: '1px solid rgba(232,68,122,0.12)' }}
             >
               <div className="text-4xl font-bold mb-1 glow-text">{responseCount}</div>
               <div className="text-xs" style={{ color: '#9090B0' }}>responses received</div>
@@ -228,7 +228,7 @@ export default function SurveyBuilder() {
               onClick={handleClose}
               disabled={closing}
               className="btn-liquid w-full py-2.5"
-              style={{ background: 'linear-gradient(135deg, #C42E60, #8B1A3E)' }}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #8B1A3E)' }}
             >
               {closing ? 'Closing…' : 'Close survey & release dataset'}
             </button>

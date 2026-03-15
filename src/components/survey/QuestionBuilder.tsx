@@ -52,7 +52,7 @@ export default function QuestionBuilder({
         <div className="flex items-center gap-2">
           <span
             className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-            style={{ background: 'rgba(232, 68, 122, 0.15)', color: '#E8447A' }}
+            style={{ background: 'rgba(99, 91, 255, 0.15)', color: '#635BFF' }}
           >
             {index + 1}
           </span>
@@ -95,7 +95,7 @@ export default function QuestionBuilder({
           <button
             onClick={() => onRemove(index)}
             className="btn-ghost px-2 py-1 text-xs"
-            style={{ color: '#FF6BA8' }}
+            style={{ color: '#818CF8' }}
             title="Remove"
           >
             ✕
@@ -176,7 +176,7 @@ export default function QuestionBuilder({
               <div key={oi} className="flex items-center gap-2">
                 <span
                   className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] flex-shrink-0"
-                  style={{ border: '1px solid rgba(232,68,122,0.3)', color: '#E8447A' }}
+                  style={{ border: '1px solid rgba(232,68,122,0.3)', color: '#635BFF' }}
                 >
                   {String.fromCharCode(65 + oi)}
                 </span>
