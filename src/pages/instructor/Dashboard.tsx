@@ -81,13 +81,16 @@ export default function InstructorDashboard() {
             <span className="text-sm opacity-75">Start a live lecture session</span>
           </button>
 
-          <div className="glass flex flex-col gap-2 p-6">
-            <span className="text-2xl" style={{ color: '#9090B0' }}>📄</span>
+          <button
+            className="glass flex flex-col gap-2 p-6 text-left transition-all hover:scale-[1.02] hover:border-[#635BFF]/40 cursor-pointer"
+            onClick={() => navigate('/instructor/articles')}
+          >
+            <span className="text-2xl">📄</span>
             <span className="font-semibold" style={{ color: '#F0F0F7' }}>Articles</span>
             <span className="text-sm" style={{ color: '#9090B0' }}>
               Write and publish blog articles
             </span>
-          </div>
+          </button>
         </div>
 
         {/* Create session modal */}
@@ -105,7 +108,7 @@ export default function InstructorDashboard() {
                 Create a new session
               </h2>
               <p className="text-sm mb-6" style={{ color: '#9090B0' }}>
-                Students will join using a code or QR scan.
+                Users will join using a code or QR scan.
               </p>
 
               <div className="mb-4">
