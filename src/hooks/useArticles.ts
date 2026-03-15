@@ -7,10 +7,33 @@ import type { Article } from '@/types'
 export async function fetchArticles(): Promise<Article[]> {
   const { data } = await supabase
     .from('articles')
-    .select('*')
+    .select('*, users(name)')
     .order('published_at', { ascending: false })
 
-  return (data ?? []) as Article[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []).map((row: any) => ({
+    ...row,
+    author_name: row.users?.name ?? 'Unknown',
+    users: undefined,
+  })) as Article[]
+}
+
+// -------------------------------------------------------
+// Fetch recent articles (for landing page)
+// -------------------------------------------------------
+export async function fetchRecentArticles(limit: number): Promise<Article[]> {
+  const { data } = await supabase
+    .from('articles')
+    .select('*, users(name)')
+    .order('published_at', { ascending: false })
+    .limit(limit)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []).map((row: any) => ({
+    ...row,
+    author_name: row.users?.name ?? 'Unknown',
+    users: undefined,
+  })) as Article[]
 }
 
 // -------------------------------------------------------

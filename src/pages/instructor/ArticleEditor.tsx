@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback, type FormEvent } from 'react'
+import { useState, useEffect, useCallback, useRef, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
+import MarkdownRenderer from '@/components/blog/MarkdownRenderer'
+import MarkdownToolbar from '@/components/blog/MarkdownToolbar'
 import { useAuth } from '@/lib/auth'
 import { createArticle, fetchMyArticles, deleteArticle } from '@/hooks/useArticles'
 import type { Article } from '@/types'
@@ -9,6 +11,7 @@ export default function ArticleEditor() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { user } = useAuth()
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const pinnedSessionId = searchParams.get('session') ?? undefined
 
@@ -67,7 +70,7 @@ export default function ArticleEditor() {
 
   return (
     <AppShell showSidebar>
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         <div className="mb-6 fade-in-up flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold" style={{ color: '#F0F0F7' }}>
@@ -85,46 +88,84 @@ export default function ArticleEditor() {
           </button>
         </div>
 
-        {/* Editor */}
+        {/* Editor with live preview */}
         {showEditor && (
           <form onSubmit={handlePublish} className="glass p-6 mb-6 space-y-4 fade-in-up">
-            <div>
-              <label className="block text-xs font-medium mb-1.5" style={{ color: '#9090B0' }}>
-                Title
-              </label>
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Article title…"
-                className="glass-input w-full px-4 py-2.5 text-sm"
-                required
-              />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: '#9090B0' }}>
+                  Title
+                </label>
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Article title…"
+                  className="glass-input w-full px-4 py-2.5 text-sm mb-3"
+                  required
+                />
+                <label className="block text-xs font-medium mb-1.5" style={{ color: '#9090B0' }}>
+                  Tags (comma-separated)
+                </label>
+                <input
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  placeholder="economics, demand, supply"
+                  className="glass-input w-full px-4 py-2.5 text-sm mb-3"
+                />
+              </div>
+              <div className="hidden lg:block" />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium mb-1.5" style={{ color: '#9090B0' }}>
-                Content (Markdown)
-              </label>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Write your article in markdown…"
-                rows={12}
-                className="glass-input w-full px-4 py-2.5 text-sm resize-none font-mono"
-                required
-              />
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Left: Editor */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-medium" style={{ color: '#9090B0' }}>
+                    Content (Markdown)
+                  </label>
+                  <span className="text-[10px]" style={{ color: '#9090B0' }}>
+                    {content.split(/\s+/).filter(Boolean).length} words
+                  </span>
+                </div>
+                <MarkdownToolbar
+                  textareaRef={textareaRef}
+                  content={content}
+                  onChange={setContent}
+                />
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Write your article in markdown…"
+                  className="glass-input w-full px-4 py-3 text-sm resize-none font-mono"
+                  style={{ height: 420 }}
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-xs font-medium mb-1.5" style={{ color: '#9090B0' }}>
-                Tags (comma-separated)
-              </label>
-              <input
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder="economics, demand, supply"
-                className="glass-input w-full px-4 py-2.5 text-sm"
-              />
+              {/* Right: Live preview */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-medium" style={{ color: '#9090B0' }}>
+                    Preview
+                  </label>
+                </div>
+                <div
+                  className="glass p-5 overflow-y-auto rounded-lg"
+                  style={{
+                    height: 458, // matches toolbar + textarea height
+                    background: 'rgba(13, 13, 18, 0.6)',
+                  }}
+                >
+                  {content.trim() ? (
+                    <MarkdownRenderer content={content} />
+                  ) : (
+                    <p className="text-sm italic" style={{ color: '#9090B0' }}>
+                      Start writing to see the preview…
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
             <button
@@ -179,7 +220,7 @@ export default function ArticleEditor() {
                   </div>
                 )}
                 <p className="text-sm mt-2 line-clamp-2" style={{ color: '#9090B0' }}>
-                  {a.content.slice(0, 200)}…
+                  {a.content.replace(/[#*`\[\]]/g, '').slice(0, 200)}…
                 </p>
               </div>
             ))}

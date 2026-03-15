@@ -1,5 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from '@/lib/auth'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+// Landing
+import LandingPage from '@/pages/LandingPage'
 
 // Auth pages
 import Login from '@/pages/auth/Login'
@@ -29,22 +31,12 @@ import CpiBuilder from '@/pages/student/CpiBuilder'
 import ArticleFeed from '@/pages/blog/ArticleFeed'
 import ArticleView from '@/pages/blog/ArticleView'
 
-function RootRedirect() {
-  const { user, loading, guestState } = useAuth()
-
-  if (loading) return null
-
-  if (user?.role === 'instructor') return <Navigate to="/instructor/dashboard" replace />
-  if (user?.role === 'student' || guestState) return <Navigate to="/student/join" replace />
-  return <Navigate to="/auth/login" replace />
-}
-
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Root redirect */}
-        <Route path="/" element={<RootRedirect />} />
+        {/* Landing page */}
+        <Route path="/" element={<LandingPage />} />
 
         {/* Auth routes (public) */}
         <Route path="/auth/login" element={<Login />} />

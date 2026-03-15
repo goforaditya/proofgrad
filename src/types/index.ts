@@ -110,6 +110,17 @@ export interface Article {
   tags: string[]
   pinned_session_id: string | null
   published_at: string
+  author_name?: string
+}
+
+export interface Comment {
+  id: string
+  article_id: string
+  user_id: string
+  content: string
+  created_at: string
+  user_name?: string
+  user_role?: UserRole
 }
 
 // -------------------------------------------------------

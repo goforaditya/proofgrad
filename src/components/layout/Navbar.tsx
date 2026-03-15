@@ -25,6 +25,13 @@ export default function Navbar() {
 
       {/* Desktop nav */}
       <nav className="hidden md:flex items-center gap-4">
+        <Link
+          to="/blog"
+          className="text-sm transition-colors hover:text-[#F0F0F7]"
+          style={{ color: '#9090B0' }}
+        >
+          Blog
+        </Link>
         {user?.role === 'instructor' && (
           <Link
             to="/instructor/dashboard"
@@ -91,6 +98,14 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="glass-strong absolute top-14 left-2 right-2 md:hidden px-4 py-4 flex flex-col gap-3 rounded-xl mt-2">
+          <Link
+            to="/blog"
+            className="text-sm py-2"
+            style={{ color: '#9090B0' }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Blog
+          </Link>
           {user?.role === 'instructor' && (
             <Link
               to="/instructor/dashboard"

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import { fetchArticles } from '@/hooks/useArticles'
@@ -8,6 +8,8 @@ export default function ArticleFeed() {
   const navigate = useNavigate()
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [activeTags, setActiveTags] = useState<Set<string>>(new Set())
 
   const load = useCallback(async () => {
     const list = await fetchArticles()
@@ -16,6 +18,48 @@ export default function ArticleFeed() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  // Extract all unique tags from articles
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>()
+    articles.forEach((a) => a.tags.forEach((t) => tagSet.add(t)))
+    return Array.from(tagSet).sort()
+  }, [articles])
+
+  function toggleTag(tag: string) {
+    setActiveTags((prev) => {
+      const next = new Set(prev)
+      if (next.has(tag)) next.delete(tag)
+      else next.add(tag)
+      return next
+    })
+  }
+
+  // Filter articles by search + active tags
+  const filtered = useMemo(() => {
+    let list = articles
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      list = list.filter(
+        (a) =>
+          a.title.toLowerCase().includes(q) ||
+          a.content.toLowerCase().includes(q) ||
+          a.author_name?.toLowerCase().includes(q)
+      )
+    }
+    if (activeTags.size > 0) {
+      list = list.filter((a) => a.tags.some((t) => activeTags.has(t)))
+    }
+    return list
+  }, [articles, search, activeTags])
+
+  function readTime(content: string): number {
+    return Math.max(1, Math.ceil(content.split(/\s+/).filter(Boolean).length / 200))
+  }
+
+  function stripMarkdown(text: string): string {
+    return text.replace(/[#*`\[\]>_~]/g, '').replace(/\(http[^)]*\)/g, '')
+  }
 
   if (loading) {
     return (
@@ -30,19 +74,61 @@ export default function ArticleFeed() {
   return (
     <AppShell>
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <h1 className="text-xl font-bold mb-6 fade-in-up" style={{ color: '#F0F0F7' }}>
+        <h1 className="text-xl font-bold mb-2 fade-in-up" style={{ color: '#F0F0F7' }}>
           Blog
         </h1>
+        <p className="text-sm mb-6 fade-in-up" style={{ color: '#9090B0' }}>
+          Articles on data analytics, economics, and classroom learning.
+        </p>
 
-        {articles.length === 0 ? (
+        {/* Search */}
+        <div className="mb-4 fade-in-up">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search articles…"
+            className="glass-input w-full px-4 py-2.5 text-sm"
+          />
+        </div>
+
+        {/* Tag filter */}
+        {allTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-6 fade-in-up">
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className={`text-xs px-2.5 py-1 rounded-full transition-all ${
+                  activeTags.has(tag) ? 'badge-glow' : 'badge-muted'
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+            {activeTags.size > 0 && (
+              <button
+                onClick={() => setActiveTags(new Set())}
+                className="text-xs px-2 py-1 transition-colors hover:text-[#F0F0F7]"
+                style={{ color: '#9090B0' }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Article list */}
+        {filtered.length === 0 ? (
           <div className="glass p-8 text-center fade-in-up">
             <p className="text-sm" style={{ color: '#9090B0' }}>
-              No articles published yet.
+              {articles.length === 0
+                ? 'No articles published yet.'
+                : 'No articles match your search.'}
             </p>
           </div>
         ) : (
           <div className="space-y-4">
-            {articles.map((a) => (
+            {filtered.map((a) => (
               <div
                 key={a.id}
                 className="glass p-5 cursor-pointer hover:border-[rgba(232,68,122,0.2)] transition-all fade-in-up"
@@ -51,9 +137,17 @@ export default function ArticleFeed() {
                 <h2 className="text-base font-semibold mb-1" style={{ color: '#F0F0F7' }}>
                   {a.title}
                 </h2>
-                <p className="text-xs mb-2" style={{ color: '#9090B0' }}>
-                  {new Date(a.published_at).toLocaleDateString()}
-                </p>
+                <div className="flex items-center gap-2 text-xs mb-2" style={{ color: '#9090B0' }}>
+                  {a.author_name && (
+                    <>
+                      <span style={{ color: '#F0F0F7' }}>{a.author_name}</span>
+                      <span>·</span>
+                    </>
+                  )}
+                  <span>{new Date(a.published_at).toLocaleDateString()}</span>
+                  <span>·</span>
+                  <span>{readTime(a.content)} min read</span>
+                </div>
                 {a.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {a.tags.map((tag, i) => (
@@ -62,7 +156,7 @@ export default function ArticleFeed() {
                   </div>
                 )}
                 <p className="text-sm line-clamp-3" style={{ color: '#9090B0' }}>
-                  {a.content.slice(0, 250)}…
+                  {stripMarkdown(a.content).slice(0, 200)}…
                 </p>
               </div>
             ))}
