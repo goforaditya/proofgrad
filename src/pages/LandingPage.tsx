@@ -204,7 +204,7 @@ export default function LandingPage() {
                 {filteredArticles.map((a) => (
                   <Link
                     key={a.id}
-                    to={`/blog/${a.id}`}
+                    to={`/blog/${a.slug}`}
                     className="glass-card p-4 block fade-in-up"
                   >
                     <h4 className="text-sm font-semibold mb-1 line-clamp-2" style={{ color: '#F0F0F7' }}>

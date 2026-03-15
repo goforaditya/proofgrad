@@ -103,7 +103,7 @@ export default function App() {
 
         {/* Blog (public) */}
         <Route path="/blog" element={<ArticleFeed />} />
-        <Route path="/blog/:articleId" element={<ArticleView />} />
+        <Route path="/blog/:slug" element={<ArticleView />} />
 
         {/* Unauthorized */}
         <Route path="/unauthorized" element={<Unauthorized />} />

@@ -3,21 +3,21 @@ import { useParams, useNavigate } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import MarkdownRenderer from '@/components/blog/MarkdownRenderer'
 import CommentSection from '@/components/blog/CommentSection'
-import { fetchArticleById } from '@/hooks/useArticles'
+import { fetchArticleBySlug } from '@/hooks/useArticles'
 import type { Article } from '@/types'
 
 export default function ArticleView() {
-  const { articleId } = useParams<{ articleId: string }>()
+  const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const [article, setArticle] = useState<Article | null>(null)
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
-    if (!articleId) return
-    const { article: a } = await fetchArticleById(articleId)
+    if (!slug) return
+    const { article: a } = await fetchArticleBySlug(slug)
     setArticle(a)
     setLoading(false)
-  }, [articleId])
+  }, [slug])
 
   useEffect(() => { load() }, [load])
 
@@ -89,7 +89,7 @@ export default function ArticleView() {
         </article>
 
         {/* Comments */}
-        {articleId && <CommentSection articleId={articleId} />}
+        {slug && <CommentSection articleId={article.id} />}
       </div>
     </AppShell>
   )

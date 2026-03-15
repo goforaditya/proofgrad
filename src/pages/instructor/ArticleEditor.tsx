@@ -61,7 +61,7 @@ export default function ArticleEditor() {
 
     if (editingId) {
       // Update existing article
-      const { error } = await updateArticle(editingId, {
+      const { article: updated, error } = await updateArticle(editingId, {
         title,
         content,
         tags: tagList,
@@ -69,13 +69,9 @@ export default function ArticleEditor() {
       })
       if (error) {
         console.error(error)
-      } else {
+      } else if (updated) {
         setArticles((prev) =>
-          prev.map((a) =>
-            a.id === editingId
-              ? { ...a, title, content, tags: tagList, pinned_session_id: pinnedSessionId ?? null }
-              : a
-          )
+          prev.map((a) => (a.id === editingId ? updated : a))
         )
         resetEditor()
       }
@@ -239,7 +235,7 @@ export default function ArticleEditor() {
                     <h3
                       className="text-base font-semibold cursor-pointer hover:underline"
                       style={{ color: '#F0F0F7' }}
-                      onClick={() => navigate(`/blog/${a.id}`)}
+                      onClick={() => navigate(`/blog/${a.slug}`)}
                     >
                       {a.title}
                     </h3>

@@ -2,6 +2,18 @@ import { supabase } from '@/lib/supabase'
 import type { Article } from '@/types'
 
 // -------------------------------------------------------
+// Slug generation
+// -------------------------------------------------------
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+// -------------------------------------------------------
 // Fetch all published articles
 // -------------------------------------------------------
 export async function fetchArticles(): Promise<Article[]> {
@@ -53,6 +65,22 @@ export async function fetchArticleById(
 }
 
 // -------------------------------------------------------
+// Fetch a single article by slug
+// -------------------------------------------------------
+export async function fetchArticleBySlug(
+  slug: string
+): Promise<{ article: Article | null; error: string | null }> {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+
+  if (error) return { article: null, error: error.message }
+  return { article: data as Article, error: null }
+}
+
+// -------------------------------------------------------
 // Create article (instructor)
 // -------------------------------------------------------
 export async function createArticle(
@@ -62,10 +90,12 @@ export async function createArticle(
   tags: string[],
   pinnedSessionId?: string
 ): Promise<{ article: Article | null; error: string | null }> {
+  const slug = generateSlug(title)
   const { data, error } = await supabase
     .from('articles')
     .insert({
       author_id: authorId,
+      slug,
       title,
       content,
       tags,
@@ -84,14 +114,20 @@ export async function createArticle(
 export async function updateArticle(
   articleId: string,
   updates: { title?: string; content?: string; tags?: string[]; pinned_session_id?: string | null }
-): Promise<{ error: string | null }> {
-  const { error } = await supabase
+): Promise<{ article: Article | null; error: string | null }> {
+  const payload: Record<string, unknown> = { ...updates }
+  if (updates.title) {
+    payload.slug = generateSlug(updates.title)
+  }
+  const { data, error } = await supabase
     .from('articles')
-    .update(updates)
+    .update(payload)
     .eq('id', articleId)
+    .select()
+    .single()
 
-  if (error) return { error: error.message }
-  return { error: null }
+  if (error) return { article: null, error: error.message }
+  return { article: data as Article, error: null }
 }
 
 // -------------------------------------------------------

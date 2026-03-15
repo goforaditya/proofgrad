@@ -132,7 +132,7 @@ export default function ArticleFeed() {
               <div
                 key={a.id}
                 className="glass p-5 cursor-pointer hover:border-[rgba(232,68,122,0.2)] transition-all fade-in-up"
-                onClick={() => navigate(`/blog/${a.id}`)}
+                onClick={() => navigate(`/blog/${a.slug}`)}
               >
                 <h2 className="text-base font-semibold mb-1" style={{ color: '#F0F0F7' }}>
                   {a.title}

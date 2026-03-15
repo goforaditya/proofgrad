@@ -105,6 +105,7 @@ export interface LectureNote {
 export interface Article {
   id: string
   author_id: string
+  slug: string
   title: string
   content: string
   tags: string[]
