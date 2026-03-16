@@ -56,9 +56,10 @@ export async function fetchSessionByCode(
     .select('*')
     .eq('join_code', joinCode.toUpperCase().trim())
     .eq('status', 'active')
-    .single()
+    .maybeSingle()
 
   if (error) return { session: null, error: 'Session not found or already ended.' }
+  if (!data) return { session: null, error: 'Session not found or already ended.' }
   return { session: data as Session, error: null }
 }
 
@@ -72,9 +73,10 @@ export async function fetchSessionById(
     .from('sessions')
     .select('*')
     .eq('id', sessionId)
-    .single()
+    .maybeSingle()
 
-  if (error) return { session: null, error: error.message }
+  if (error) return { session: null, error: 'Could not load session.' }
+  if (!data) return { session: null, error: 'Session not found.' }
   return { session: data as Session, error: null }
 }
 
@@ -102,6 +104,12 @@ export async function joinSession(
   nickname: string,
   userId?: string
 ): Promise<{ student: SessionStudent | null; error: string | null }> {
+  // If logged-in user, check if they already joined this session
+  if (userId) {
+    const existing = await fetchMySessionStudent(sessionId, userId)
+    if (existing) return { student: existing, error: null }
+  }
+
   const { data, error } = await supabase
     .from('session_students')
     .insert({
@@ -111,7 +119,7 @@ export async function joinSession(
       is_guest: !userId,
     })
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) {
     if (error.code === '23505') {
@@ -120,6 +128,7 @@ export async function joinSession(
     return { student: null, error: error.message }
   }
 
+  if (!data) return { student: null, error: 'Failed to join session.' }
   return { student: data as SessionStudent, error: null }
 }
 

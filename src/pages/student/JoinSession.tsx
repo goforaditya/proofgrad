@@ -26,13 +26,12 @@ export default function JoinSession() {
     }
   }, [searchParams])
 
-  // If guest already has a session, offer to rejoin
+  // If guest already has a session, offer to rejoin (skip for logged-in users)
   useEffect(() => {
-    if (guestState?.sessionId) {
-      // Automatically redirect to their active session
+    if (!user && guestState?.sessionId) {
       navigate(`/student/session/${guestState.sessionId}`, { replace: true })
     }
-  }, [guestState, navigate])
+  }, [guestState, navigate, user])
 
   async function handleJoin(e: FormEvent) {
     e.preventDefault()
