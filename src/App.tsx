@@ -111,6 +111,8 @@ export default function App() {
         />
 
         {/* User/session routes (public — guests allowed) */}
+        <Route path="/join" element={<JoinSession />} />
+        {/* Legacy redirect */}
         <Route path="/student/join" element={<JoinSession />} />
         <Route path="/student/session/:sessionId" element={<SessionView />} />
         <Route path="/student/session/:sessionId/survey" element={<SurveyForm />} />

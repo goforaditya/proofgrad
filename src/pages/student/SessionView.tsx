@@ -80,7 +80,7 @@ export default function SessionView() {
         <div className="text-center py-20">
           <p style={{ color: '#818CF8' }}>{error ?? 'Session not found'}</p>
           <button
-            onClick={() => navigate('/student/join')}
+            onClick={() => navigate('/join')}
             className="mt-4 text-sm underline"
             style={{ color: '#635BFF' }}
           >
@@ -202,7 +202,7 @@ export default function SessionView() {
                 📄 Export portfolio
               </button>
               <button
-                onClick={() => navigate('/student/join')}
+                onClick={() => navigate('/join')}
                 className="btn-ghost px-6 py-2.5"
               >
                 Join another session

@@ -109,7 +109,7 @@ export default function LandingPage() {
             {/* Featured app card */}
             <div
               className="glass-card-featured p-6 cursor-pointer"
-              onClick={() => navigate(user ? dashboardPath : '/auth/signup')}
+              onClick={() => navigate(user?.role === 'instructor' ? dashboardPath : '/join')}
             >
               <div className="relative z-[1]">
                 <div className="flex items-center gap-3 mb-3">

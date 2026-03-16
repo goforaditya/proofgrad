@@ -33,7 +33,7 @@ export default function SessionControl() {
   const [advancing, setAdvancing] = useState(false)
 
   const joinUrl = session
-    ? `${window.location.origin}/student/join?code=${session.join_code}`
+    ? `${window.location.origin}/join?code=${session.join_code}`
     : ''
 
   const loadData = useCallback(async () => {
