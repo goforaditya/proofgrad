@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import { useAuth } from '@/lib/auth'
 import { fetchSessionSurveys, fetchSurveyResponses } from '@/hooks/useSurvey'
@@ -16,7 +16,13 @@ interface DataRow {
 export default function DatasetView() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { guestState } = useAuth()
+
+  const isInstructor = location.pathname.startsWith('/instructor/')
+  const basePath = isInstructor
+    ? `/instructor/session/${sessionId}`
+    : `/student/session/${sessionId}`
 
   const [allSurveys, setAllSurveys] = useState<Survey[]>([])
   const [survey, setSurvey] = useState<Survey | null>(null)
@@ -79,6 +85,30 @@ export default function DatasetView() {
 
   useEffect(() => { loadDataset() }, [loadDataset])
 
+  function downloadCSV() {
+    if (!survey) return
+    const headers = survey.questions.map((q) => q.label)
+    const csvRows = [headers.join(',')]
+    for (const row of rows) {
+      const vals = row.values.map((v) => {
+        const s = String(v)
+        // Escape quotes and wrap in quotes if contains comma/quote/newline
+        if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+          return `"${s.replace(/"/g, '""')}"`
+        }
+        return s
+      })
+      csvRows.push(vals.join(','))
+    }
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${survey.title.replace(/\s+/g, '_')}_data.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   function handleSort(colIdx: number) {
     if (sortCol === colIdx) {
       setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
@@ -124,7 +154,7 @@ export default function DatasetView() {
               The survey hasn't been completed yet.
             </p>
             <button
-              onClick={() => navigate(`/student/session/${sessionId}`)}
+              onClick={() => navigate(`${basePath}`)}
               className="btn-ghost px-6 py-2.5"
             >
               ← Back to session
@@ -148,7 +178,7 @@ export default function DatasetView() {
         {/* Header */}
         <div className="mb-6 fade-in-up">
           <button
-            onClick={() => navigate(`/student/session/${sessionId}`)}
+            onClick={() => navigate(`${basePath}`)}
             className="text-xs mb-2 inline-block"
             style={{ color: '#9090B0' }}
           >
@@ -182,7 +212,13 @@ export default function DatasetView() {
             </div>
             <div className="flex gap-2 items-center">
               <button
-                onClick={() => navigate(`/student/session/${sessionId}/analysis`)}
+                onClick={downloadCSV}
+                className="btn-ghost px-4 py-2 text-xs"
+              >
+                ⬇ Download CSV
+              </button>
+              <button
+                onClick={() => navigate(`${basePath}/analysis`)}
                 className="btn-liquid px-4 py-2 text-xs"
               >
                 ✨ Analyse data

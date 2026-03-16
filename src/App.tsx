@@ -86,6 +86,22 @@ export default function App() {
           }
         />
         <Route
+          path="/instructor/session/:sessionId/dataset"
+          element={
+            <ProtectedRoute role="instructor">
+              <DatasetView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/session/:sessionId/analysis"
+          element={
+            <ProtectedRoute role="instructor">
+              <AnalysisWorkspace />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/instructor/articles"
           element={
             <ProtectedRoute role="instructor">

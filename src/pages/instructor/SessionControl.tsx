@@ -231,6 +231,22 @@ export default function SessionControl() {
               >
                 <span>📝</span> Lecture notes
               </button>
+              {(session.phase === 'dataset' || session.phase === 'analysis' || session.phase === 'ended') && (
+                <>
+                  <button
+                    onClick={() => navigate(`/instructor/session/${sessionId}/dataset`)}
+                    className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
+                  >
+                    <span>📊</span> View dataset
+                  </button>
+                  <button
+                    onClick={() => navigate(`/instructor/session/${sessionId}/analysis`)}
+                    className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
+                  >
+                    <span>✨</span> Analysis workspace
+                  </button>
+                </>
+              )}
             </div>
           )}
 

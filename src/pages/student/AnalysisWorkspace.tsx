@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import { useAuth } from '@/lib/auth'
 import { fetchSessionSurveys, fetchSurveyResponses } from '@/hooks/useSurvey'
@@ -43,7 +43,13 @@ const CHART_ICONS: Record<ChartType, string> = {
 export default function AnalysisWorkspace() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, guestState } = useAuth()
+
+  const isInstructor = location.pathname.startsWith('/instructor/')
+  const basePath = isInstructor
+    ? `/instructor/session/${sessionId}`
+    : `/student/session/${sessionId}`
 
   const [survey, setSurvey] = useState<Survey | null>(null)
   const [columns, setColumns] = useState<DatasetColumn[]>([])
@@ -57,15 +63,15 @@ export default function AnalysisWorkspace() {
   const [customX, setCustomX] = useState('')
   const [customY, setCustomY] = useState('')
 
-  // CTA gate: require signup for analysis
+  // CTA gate: require signup for analysis (skip for instructors)
   const isGuest = !user && !!guestState
   const [showCTA, setShowCTA] = useState(false)
 
   useEffect(() => {
-    if (isGuest) {
+    if (isGuest && !isInstructor) {
       setShowCTA(true)
     }
-  }, [isGuest])
+  }, [isGuest, isInstructor])
 
   const loadData = useCallback(async () => {
     if (!sessionId) return
@@ -191,7 +197,7 @@ export default function AnalysisWorkspace() {
               Create free account
             </button>
             <button
-              onClick={() => navigate(`/student/session/${sessionId}`)}
+              onClick={() => navigate(`${basePath}`)}
               className="btn-ghost px-6 py-2.5 w-full"
             >
               ← Back to session
@@ -221,7 +227,7 @@ export default function AnalysisWorkspace() {
               No dataset available
             </p>
             <button
-              onClick={() => navigate(`/student/session/${sessionId}`)}
+              onClick={() => navigate(`${basePath}`)}
               className="btn-ghost px-6 py-2.5"
             >
               ← Back to session
@@ -238,7 +244,7 @@ export default function AnalysisWorkspace() {
         {/* Header */}
         <div className="mb-6 fade-in-up">
           <button
-            onClick={() => navigate(`/student/session/${sessionId}`)}
+            onClick={() => navigate(`${basePath}`)}
             className="text-xs mb-2 inline-block"
             style={{ color: '#9090B0' }}
           >
