@@ -17,6 +17,7 @@ export default function CompleteProfile() {
   )
   const [instagram, setInstagram] = useState(user?.instagram ?? '')
   const [linkedin, setLinkedin] = useState(user?.linkedin ?? '')
+  const [snapchat, setSnapchat] = useState(user?.snapchat ?? '')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -37,6 +38,7 @@ export default function CompleteProfile() {
         accommodation: accommodation || null,
         instagram: instagram || null,
         linkedin: linkedin || null,
+        snapchat: snapchat || null,
         profile_completed: true,
       })
       .eq('id', user!.id)
@@ -151,6 +153,19 @@ export default function CompleteProfile() {
                 value={linkedin}
                 onChange={(e) => setLinkedin(e.target.value)}
                 placeholder="linkedin.com/in/username"
+                className="glass-input w-full px-4 py-2.5 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#9090B0' }}>
+                Snapchat (optional)
+              </label>
+              <input
+                type="text"
+                value={snapchat}
+                onChange={(e) => setSnapchat(e.target.value)}
+                placeholder="@username"
                 className="glass-input w-full px-4 py-2.5 text-sm"
               />
             </div>

@@ -26,6 +26,7 @@ export interface User {
   accommodation: Accommodation | null
   instagram: string | null
   linkedin: string | null
+  snapchat: string | null
   profile_completed: boolean
   created_at: string
 }

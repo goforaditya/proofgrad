@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import { useAuth } from '@/lib/auth'
+import { supabase } from '@/lib/supabase'
 import { fetchSessionById } from '@/hooks/useSession'
 import { subscribeToSession } from '@/lib/realtime'
 import type { Session, SessionPhase } from '@/types'
@@ -25,13 +26,20 @@ const PHASE_DESCRIPTIONS: Record<SessionPhase, string> = {
 export default function SessionView() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const navigate = useNavigate()
-  const { user, guestState } = useAuth()
+  const { user, guestState, refreshUser } = useAuth()
 
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const displayName = user?.name ?? guestState?.nickname ?? 'Student'
+  // Profile nudge modal state
+  const [showProfileNudge, setShowProfileNudge] = useState(false)
+  const [profileSaving, setProfileSaving] = useState(false)
+  const [snapchat, setSnapchat] = useState(user?.snapchat ?? '')
+  const [instagram, setInstagram] = useState(user?.instagram ?? '')
+  const [linkedin, setLinkedin] = useState(user?.linkedin ?? '')
+
+  const displayName = user?.name ?? guestState?.nickname ?? 'User'
 
   const loadSession = useCallback(async () => {
     if (!sessionId) return
@@ -63,6 +71,30 @@ export default function SessionView() {
 
     return unsub
   }, [sessionId])
+
+  // Show profile nudge when session ends for logged-in users with incomplete profiles
+  useEffect(() => {
+    if (session?.phase === 'ended' && user && !user.profile_completed) {
+      setShowProfileNudge(true)
+    }
+  }, [session?.phase, user])
+
+  async function handleProfileSave() {
+    if (!user) return
+    setProfileSaving(true)
+    await supabase
+      .from('users')
+      .update({
+        snapchat: snapchat || null,
+        instagram: instagram || null,
+        linkedin: linkedin || null,
+        profile_completed: true,
+      })
+      .eq('id', user.id)
+    await refreshUser()
+    setProfileSaving(false)
+    setShowProfileNudge(false)
+  }
 
   if (loading) {
     return (
@@ -207,10 +239,92 @@ export default function SessionView() {
               >
                 Join another session
               </button>
+              {!user && (
+                <button
+                  onClick={() => navigate(`/auth/signup?redirect=session&session=${sessionId}`)}
+                  className="btn-liquid px-6 py-2.5 mt-2"
+                >
+                  Create account to save your work
+                </button>
+              )}
             </div>
           )}
         </div>
       </div>
+
+      {/* Profile completion nudge modal */}
+      {showProfileNudge && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          style={{ background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(8px)' }}
+        >
+          <div className="glass-strong p-8 max-w-md w-full fade-in-up">
+            <div className="text-center mb-6">
+              <div className="text-3xl mb-3">🎉</div>
+              <h2 className="text-xl font-bold mb-2" style={{ color: '#F0F0F7' }}>
+                Great session!
+              </h2>
+              <p className="text-sm" style={{ color: '#9090B0' }}>
+                Complete your profile to unlock PDF exports, connect with peers,
+                and get personalized insights.
+              </p>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              <div>
+                <label className="block text-xs font-medium mb-1" style={{ color: '#9090B0' }}>
+                  Snapchat
+                </label>
+                <input
+                  type="text"
+                  value={snapchat}
+                  onChange={(e) => setSnapchat(e.target.value)}
+                  placeholder="@username"
+                  className="glass-input w-full px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1" style={{ color: '#9090B0' }}>
+                  Instagram
+                </label>
+                <input
+                  type="text"
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value)}
+                  placeholder="@username"
+                  className="glass-input w-full px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1" style={{ color: '#9090B0' }}>
+                  LinkedIn
+                </label>
+                <input
+                  type="text"
+                  value={linkedin}
+                  onChange={(e) => setLinkedin(e.target.value)}
+                  placeholder="linkedin.com/in/username"
+                  className="glass-input w-full px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={handleProfileSave}
+              disabled={profileSaving}
+              className="btn-liquid w-full py-2.5 mb-3"
+            >
+              {profileSaving ? 'Saving…' : 'Complete Profile'}
+            </button>
+            <button
+              onClick={() => setShowProfileNudge(false)}
+              className="btn-ghost w-full py-2 text-sm"
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
+      )}
     </AppShell>
   )
 }
