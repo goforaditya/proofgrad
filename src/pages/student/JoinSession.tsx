@@ -27,12 +27,8 @@ export default function JoinSession() {
     }
   }, [searchParams])
 
-  // If guest already has a session, offer to rejoin (skip for logged-in users)
-  useEffect(() => {
-    if (!user && guestState?.sessionId) {
-      navigate(`/student/session/${guestState.sessionId}`, { replace: true })
-    }
-  }, [guestState, navigate, user])
+  // Track whether guest has an existing session (don't auto-redirect)
+  const hasExistingSession = !user && !!guestState?.sessionId
 
   async function handleJoin(e: FormEvent) {
     e.preventDefault()
@@ -98,6 +94,23 @@ export default function JoinSession() {
         <p className="text-sm mb-8" style={{ color: '#9090B0' }}>
           Enter the session code or scan the QR code to join.
         </p>
+
+        {hasExistingSession && (
+          <div
+            className="glass mb-6 px-4 py-3 text-sm flex items-center justify-between"
+            style={{ borderColor: 'rgba(99, 91, 255, 0.25)' }}
+          >
+            <span style={{ color: '#9090B0' }}>
+              You're already in a session as <strong style={{ color: '#F0F0F7' }}>{guestState!.nickname}</strong>
+            </span>
+            <button
+              onClick={() => navigate(`/student/session/${guestState!.sessionId}`)}
+              className="btn-liquid px-3 py-1.5 text-xs"
+            >
+              Rejoin →
+            </button>
+          </div>
+        )}
 
         {user && (
           <div className="glass mb-6 px-4 py-3 text-sm flex items-center gap-2">
