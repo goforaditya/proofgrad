@@ -37,7 +37,7 @@ export default function Signup() {
 
     // Redirect based on context
     if (redirectParam === 'analysis' && sessionParam) {
-      navigate(`/student/analysis?session=${sessionParam}`, { replace: true })
+      navigate(`/student/session/${sessionParam}/analysis`, { replace: true })
     } else {
       navigate('/', { replace: true })
     }
