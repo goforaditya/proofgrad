@@ -51,6 +51,7 @@ export default function AnalysisWorkspace() {
     ? `/instructor/session/${sessionId}`
     : `/student/session/${sessionId}`
 
+  const [allSurveys, setAllSurveys] = useState<Survey[]>([])
   const [survey, setSurvey] = useState<Survey | null>(null)
   const [columns, setColumns] = useState<DatasetColumn[]>([])
   const [suggestions, setSuggestions] = useState<AnalysisSuggestion[]>([])
@@ -68,28 +69,31 @@ export default function AnalysisWorkspace() {
   const isGuest = !authLoading && !user && !!guestState
   const showCTA = isGuest && !isInstructor
 
+  // Load a specific survey's data
+  const loadSurveyData = useCallback(async (s: Survey) => {
+    setSurvey(s)
+    setActiveCharts([])
+    const responses = await fetchSurveyResponses(s.id)
+    const cols = buildDatasetColumns(s.questions, responses)
+    setColumns(cols)
+    setSuggestions(generateLocalSuggestions(cols))
+  }, [])
+
+  // Initial load: fetch all surveys, select the latest
   const loadData = useCallback(async () => {
     if (!sessionId) return
 
     const surveys = await fetchSessionSurveys(sessionId)
+    setAllSurveys(surveys)
+
     if (surveys.length === 0) {
       setLoading(false)
       return
     }
 
-    const latestSurvey = surveys[0]
-    setSurvey(latestSurvey)
-
-    const responses = await fetchSurveyResponses(latestSurvey.id)
-    const cols = buildDatasetColumns(latestSurvey.questions, responses)
-    setColumns(cols)
-
-    // Generate suggestions
-    const localSuggestions = generateLocalSuggestions(cols)
-    setSuggestions(localSuggestions)
-
+    await loadSurveyData(surveys[0])
     setLoading(false)
-  }, [sessionId])
+  }, [sessionId, loadSurveyData])
 
   useEffect(() => {
     loadData()
@@ -269,6 +273,31 @@ export default function AnalysisWorkspace() {
               </button>
             </div>
           </div>
+
+          {/* Survey selector — shown when multiple surveys exist */}
+          {allSurveys.length > 1 && (
+            <div className="mt-3 flex items-center gap-2 flex-wrap">
+              <span className="text-xs" style={{ color: '#9090B0' }}>Survey:</span>
+              {allSurveys.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => { if (s.id !== survey?.id) loadSurveyData(s) }}
+                  className={`px-3 py-1 text-xs rounded-full transition-all ${
+                    s.id === survey?.id
+                      ? 'font-semibold'
+                      : 'hover:bg-[rgba(99,91,255,0.1)]'
+                  }`}
+                  style={{
+                    color: s.id === survey?.id ? '#F0F0F7' : '#9090B0',
+                    background: s.id === survey?.id ? 'rgba(99,91,255,0.2)' : 'transparent',
+                    border: `1px solid ${s.id === survey?.id ? 'rgba(99,91,255,0.4)' : 'rgba(46,46,69,0.5)'}`,
+                  }}
+                >
+                  {s.title}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Custom chart builder */}
