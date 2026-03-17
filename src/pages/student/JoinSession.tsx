@@ -182,7 +182,7 @@ export default function JoinSession() {
           {!user && (
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: '#9090B0' }}>
-                Your nickname
+                Your name
               </label>
               <input
                 type="text"
