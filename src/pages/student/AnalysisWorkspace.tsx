@@ -353,6 +353,115 @@ export default function AnalysisWorkspace() {
           </div>
         )}
 
+        {/* Summary Statistics */}
+        {columns.filter((c) => c.type === 'numeric').length > 0 && (
+          <div className="mb-6 fade-in-up">
+            <h3
+              className="text-xs font-medium mb-3 uppercase tracking-wider"
+              style={{ color: '#9090B0' }}
+            >
+              Summary Statistics
+            </h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+                <thead>
+                  <tr>
+                    {['Variable', 'N', 'Mean', 'Median', 'Std Dev', 'Min', 'Max'].map((h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider"
+                        style={{ color: '#9090B0', borderBottom: '1px solid #2E2E45' }}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {columns
+                    .filter((c) => c.type === 'numeric')
+                    .map((col) => {
+                      const nums = col.values.filter((v) => typeof v === 'number' && v !== 0) as number[]
+                      const stats = computeStats(nums)
+                      return (
+                        <tr key={col.index} className="hover:bg-[rgba(99,91,255,0.05)] transition-colors">
+                          <td className="px-4 py-2.5 font-medium" style={{ color: '#F0F0F7', borderBottom: '1px solid rgba(46,46,69,0.5)' }}>
+                            {col.label}
+                          </td>
+                          <td className="px-4 py-2.5 font-mono text-xs" style={{ color: '#9090B0', borderBottom: '1px solid rgba(46,46,69,0.5)' }}>
+                            {nums.length}
+                          </td>
+                          {[stats.mean, stats.median, stats.stdDev, stats.min, stats.max].map((val, i) => (
+                            <td
+                              key={i}
+                              className="px-4 py-2.5 font-mono text-xs"
+                              style={{ color: '#F0F0F7', borderBottom: '1px solid rgba(46,46,69,0.5)' }}
+                            >
+                              {val.toFixed(2)}
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Categorical Frequency Counts */}
+        {columns.filter((c) => c.type === 'categorical').length > 0 && (
+          <div className="mb-6 fade-in-up">
+            <h3
+              className="text-xs font-medium mb-3 uppercase tracking-wider"
+              style={{ color: '#9090B0' }}
+            >
+              Frequency Counts
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {columns
+                .filter((c) => c.type === 'categorical')
+                .map((col) => {
+                  const counts = buildCategoryCount(col.values)
+                  const total = counts.reduce((s, c) => s + c.count, 0)
+                  return (
+                    <div key={col.index} className="glass p-4">
+                      <h4 className="text-sm font-semibold mb-3" style={{ color: '#F0F0F7' }}>
+                        {col.label}
+                      </h4>
+                      <div className="space-y-1.5">
+                        {counts.slice(0, 8).map((item) => (
+                          <div key={item.label} className="flex items-center gap-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex justify-between text-xs mb-0.5">
+                                <span className="truncate" style={{ color: '#F0F0F7' }}>{item.label}</span>
+                                <span style={{ color: '#9090B0' }}>{item.count} ({total > 0 ? ((item.count / total) * 100).toFixed(0) : 0}%)</span>
+                              </div>
+                              <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(46,46,69,0.6)' }}>
+                                <div
+                                  className="h-full rounded-full"
+                                  style={{
+                                    width: `${total > 0 ? (item.count / total) * 100 : 0}%`,
+                                    background: 'linear-gradient(90deg, #635BFF, #818CF8)',
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        {counts.length > 8 && (
+                          <p className="text-[10px] pt-1" style={{ color: '#9090B0' }}>
+                            + {counts.length - 8} more categories
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+            </div>
+          </div>
+        )}
+
         {/* AI Suggestions */}
         {activeCharts.length === 0 && suggestions.length > 0 && (
           <div className="mb-6 fade-in-up">
