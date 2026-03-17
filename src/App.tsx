@@ -6,7 +6,7 @@ import LandingPage from '@/pages/LandingPage'
 
 // Auth pages
 import Login from '@/pages/auth/Login'
-import Signup from '@/pages/auth/Signup'
+import Signup from '@/pages/auth/SignUp'
 import InstructorLogin from '@/pages/auth/InstructorLogin'
 import CompleteProfile from '@/pages/auth/CompleteProfile'
 
