@@ -2,8 +2,9 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/lib/auth'
 import { fetchArticles } from '@/hooks/useArticles'
-import { fetchResourceLinks } from '@/hooks/useResources'
-import type { Article, ResourceLink } from '@/types'
+import { fetchResourceLinks, fetchReactionsForLinks } from '@/hooks/useResources'
+import { supabase } from '@/lib/supabase'
+import type { Article, ResourceLink, LinkReaction } from '@/types'
 
 const NICHE_COLORS: Record<string, { bg: string; text: string; activeBg: string }> = {}
 const COLOR_PALETTE = [
@@ -24,17 +25,46 @@ function getNicheColor(niche: string) {
   return NICHE_COLORS[niche]
 }
 
+async function fetchCommentCounts(linkIds: string[]): Promise<Record<string, number>> {
+  if (linkIds.length === 0) return {}
+  const { data } = await supabase
+    .from('link_comments')
+    .select('link_id')
+    .in('link_id', linkIds)
+  const counts: Record<string, number> = {}
+  for (const row of data ?? []) {
+    counts[row.link_id] = (counts[row.link_id] || 0) + 1
+  }
+  return counts
+}
+
 export default function LandingPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [articles, setArticles] = useState<Article[]>([])
   const [search, setSearch] = useState('')
   const [resources, setResources] = useState<ResourceLink[]>([])
+  const [reactions, setReactions] = useState<Record<string, LinkReaction[]>>({})
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({})
   const [activeNiche, setActiveNiche] = useState<string | null>(null)
 
   useEffect(() => {
     fetchArticles().then(setArticles)
-    fetchResourceLinks().then(setResources)
+    fetchResourceLinks().then(async (links) => {
+      setResources(links)
+      const ids = links.map((l) => l.id)
+      const [allReactions, counts] = await Promise.all([
+        fetchReactionsForLinks(ids),
+        fetchCommentCounts(ids),
+      ])
+      const grouped: Record<string, LinkReaction[]> = {}
+      for (const r of allReactions) {
+        if (!grouped[r.link_id]) grouped[r.link_id] = []
+        grouped[r.link_id].push(r)
+      }
+      setReactions(grouped)
+      setCommentCounts(counts)
+    })
   }, [])
 
   const dashboardPath =
@@ -271,7 +301,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Resources section */}
+      {/* Resources section — full width, HN/Lobsters style */}
       {resources.length > 0 && (
         <section className="px-4 sm:px-6 pb-16 max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-4">
@@ -286,90 +316,141 @@ export default function LandingPage() {
           </div>
 
           {/* Colourful niche filter pills */}
-          {resourceNiches.length > 1 && (
-            <div className="flex flex-wrap gap-2 mb-5 fade-in-up">
-              <button
-                onClick={() => setActiveNiche(null)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
-                style={{
-                  background: !activeNiche ? 'linear-gradient(135deg, #635BFF, #4F46E5)' : 'rgba(46, 46, 69, 0.5)',
-                  color: !activeNiche ? '#fff' : '#9090B0',
-                  border: !activeNiche ? 'none' : '1px solid rgba(255,255,255,0.05)',
-                }}
-              >
-                All
-              </button>
-              {resourceNiches.map((niche) => {
-                const c = getNicheColor(niche)
-                const isActive = activeNiche === niche
-                return (
-                  <button
-                    key={niche}
-                    onClick={() => setActiveNiche(isActive ? null : niche)}
-                    className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
-                    style={{
-                      background: isActive ? c.activeBg : c.bg,
-                      color: isActive ? '#fff' : c.text,
-                      border: isActive ? 'none' : `1px solid ${c.text}22`,
-                    }}
-                  >
-                    {niche}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-
-          {/* Resource link cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {filteredResources.visible.map((link) => {
-              const c = getNicheColor(link.niche)
+          <div className="flex flex-wrap items-center gap-2 mb-4 fade-in-up">
+            <button
+              onClick={() => setActiveNiche(null)}
+              className="px-3 py-1 rounded-md text-xs font-medium transition-all"
+              style={{
+                background: !activeNiche ? 'rgba(99, 91, 255, 0.2)' : 'transparent',
+                color: !activeNiche ? '#A5B4FC' : '#9090B0',
+                border: !activeNiche ? '1px solid rgba(99, 91, 255, 0.3)' : '1px solid transparent',
+              }}
+            >
+              all
+            </button>
+            {resourceNiches.map((niche) => {
+              const c = getNicheColor(niche)
+              const isActive = activeNiche === niche
               return (
-                <a
-                  key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="glass-card p-4 block fade-in-up hover:border-[rgba(99,91,255,0.2)] transition-all"
+                <button
+                  key={niche}
+                  onClick={() => setActiveNiche(isActive ? null : niche)}
+                  className="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                  style={{
+                    background: isActive ? c.bg : 'transparent',
+                    color: isActive ? c.text : '#9090B0',
+                    border: isActive ? `1px solid ${c.text}33` : '1px solid transparent',
+                  }}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <h4 className="text-sm font-semibold line-clamp-1" style={{ color: '#A5B4FC' }}>
-                      {link.title} ↗
-                    </h4>
-                    <span
-                      className="text-[10px] px-2 py-0.5 rounded-full flex-shrink-0"
-                      style={{ background: c.bg, color: c.text }}
-                    >
-                      {link.niche}
-                    </span>
-                  </div>
-                  {link.description && (
-                    <p className="text-xs mt-1.5 line-clamp-2" style={{ color: '#9090B0' }}>
-                      {link.description}
-                    </p>
-                  )}
-                </a>
+                  {niche.toLowerCase()}
+                </button>
               )
             })}
           </div>
 
-          {/* Gate CTA */}
-          {filteredResources.hiddenCount > 0 && (
-            <div
-              className="glass-strong p-5 mt-4 text-center fade-in-up"
-              style={{ border: '1px solid rgba(99, 91, 255, 0.15)' }}
-            >
-              <p className="text-sm mb-3" style={{ color: '#9090B0' }}>
-                🔒 {filteredResources.hiddenCount} more resource{filteredResources.hiddenCount > 1 ? 's' : ''} — {user ? 'complete your profile' : 'sign in'} to unlock all.
-              </p>
-              <Link
-                to={user ? '/auth/complete-profile' : '/auth/login'}
-                className="btn-liquid px-5 py-2 text-sm inline-block"
+          {/* Resource list — numbered, compact rows */}
+          <div
+            className="rounded-xl overflow-hidden"
+            style={{ border: '1px solid rgba(46, 46, 69, 0.6)', background: 'rgba(26, 26, 38, 0.5)' }}
+          >
+            {filteredResources.visible.map((link, idx) => {
+              const c = getNicheColor(link.niche)
+              const linkReactions = reactions[link.id] ?? []
+              const smileCount = linkReactions.filter((r) => r.emoji === 'smile').length
+              const upvoteCount = linkReactions.filter((r) => r.emoji === 'upvote').length
+              const poopCount = linkReactions.filter((r) => r.emoji === 'poop').length
+              const cCount = commentCounts[link.id] ?? 0
+              const domain = (() => { try { return new URL(link.url).hostname.replace('www.', '') } catch { return '' } })()
+
+              return (
+                <div
+                  key={link.id}
+                  className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-[rgba(99,91,255,0.04)]"
+                  style={{ borderBottom: '1px solid rgba(46, 46, 69, 0.5)' }}
+                >
+                  {/* Row number */}
+                  <span
+                    className="text-xs font-mono pt-0.5 w-5 text-right flex-shrink-0"
+                    style={{ color: '#9090B0' }}
+                  >
+                    {idx + 1}.
+                  </span>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    {/* Title + domain */}
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium hover:underline"
+                        style={{ color: '#F0F0F7' }}
+                      >
+                        {link.title}
+                      </a>
+                      {domain && (
+                        <span className="text-[10px]" style={{ color: '#9090B0' }}>
+                          ({domain})
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Meta row: tag, reactions, comments */}
+                    <div className="flex items-center gap-3 mt-1 flex-wrap">
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded"
+                        style={{ background: c.bg, color: c.text }}
+                      >
+                        {link.niche}
+                      </span>
+
+                      {(upvoteCount > 0 || smileCount > 0 || poopCount > 0) && (
+                        <span className="flex items-center gap-2 text-[11px]" style={{ color: '#9090B0' }}>
+                          {upvoteCount > 0 && <span>👍 {upvoteCount}</span>}
+                          {smileCount > 0 && <span>😊 {smileCount}</span>}
+                          {poopCount > 0 && <span>💩 {poopCount}</span>}
+                        </span>
+                      )}
+
+                      <Link
+                        to="/resources"
+                        className="text-[11px] hover:underline"
+                        style={{ color: '#9090B0' }}
+                      >
+                        💬 {cCount} comment{cCount !== 1 ? 's' : ''}
+                      </Link>
+
+                      {link.description && (
+                        <span className="text-[10px] hidden sm:inline" style={{ color: '#6B6B8A' }}>
+                          — {link.description.length > 80 ? link.description.slice(0, 80) + '…' : link.description}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+
+            {/* Gate row */}
+            {filteredResources.hiddenCount > 0 && (
+              <div
+                className="px-4 py-4 text-center"
+                style={{ background: 'rgba(99, 91, 255, 0.03)' }}
               >
-                {user ? 'Complete profile' : 'Sign in to unlock'}
-              </Link>
-            </div>
-          )}
+                <p className="text-xs mb-2" style={{ color: '#9090B0' }}>
+                  🔒 {filteredResources.hiddenCount} more resource{filteredResources.hiddenCount > 1 ? 's' : ''} — {user ? 'complete your profile' : 'sign in'} to unlock.
+                </p>
+                <Link
+                  to={user ? '/auth/complete-profile' : '/auth/login'}
+                  className="text-xs font-medium hover:underline"
+                  style={{ color: '#A5B4FC' }}
+                >
+                  {user ? 'Complete profile →' : 'Sign in to unlock →'}
+                </Link>
+              </div>
+            )}
+          </div>
         </section>
       )}
 
