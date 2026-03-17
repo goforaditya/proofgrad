@@ -2,6 +2,29 @@ import { supabase } from '@/lib/supabase'
 import type { Article } from '@/types'
 
 // -------------------------------------------------------
+// Upload banner image to Supabase Storage
+// -------------------------------------------------------
+export async function uploadBanner(
+  file: File,
+  authorId: string
+): Promise<{ url: string | null; error: string | null }> {
+  const ext = file.name.split('.').pop() ?? 'png'
+  const path = `banners/${authorId}_${Date.now()}.${ext}`
+
+  const { error } = await supabase.storage
+    .from('banners')
+    .upload(path, file, { upsert: true })
+
+  if (error) return { url: null, error: error.message }
+
+  const { data: urlData } = supabase.storage
+    .from('banners')
+    .getPublicUrl(path)
+
+  return { url: urlData.publicUrl, error: null }
+}
+
+// -------------------------------------------------------
 // Slug generation
 // -------------------------------------------------------
 function generateSlug(title: string): string {
@@ -88,7 +111,8 @@ export async function createArticle(
   title: string,
   content: string,
   tags: string[],
-  pinnedSessionId?: string
+  pinnedSessionId?: string,
+  bannerUrl?: string
 ): Promise<{ article: Article | null; error: string | null }> {
   const slug = generateSlug(title)
   const { data, error } = await supabase
@@ -100,6 +124,7 @@ export async function createArticle(
       content,
       tags,
       pinned_session_id: pinnedSessionId ?? null,
+      banner_url: bannerUrl ?? null,
     })
     .select()
     .single()
@@ -113,7 +138,7 @@ export async function createArticle(
 // -------------------------------------------------------
 export async function updateArticle(
   articleId: string,
-  updates: { title?: string; content?: string; tags?: string[]; pinned_session_id?: string | null }
+  updates: { title?: string; content?: string; tags?: string[]; pinned_session_id?: string | null; banner_url?: string | null }
 ): Promise<{ article: Article | null; error: string | null }> {
   const payload: Record<string, unknown> = { ...updates }
   if (updates.title) {

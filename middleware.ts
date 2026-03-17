@@ -19,7 +19,7 @@ export default async function middleware(req: NextRequest) {
 
   try {
     // Fetch article metadata from Supabase REST API
-    const apiUrl = `${supabaseUrl}/rest/v1/articles?slug=eq.${encodeURIComponent(slug)}&select=title,content,author_id&limit=1`
+    const apiUrl = `${supabaseUrl}/rest/v1/articles?slug=eq.${encodeURIComponent(slug)}&select=title,content,author_id,banner_url,tags&limit=1`
     const res = await fetch(apiUrl, {
       headers: {
         apikey: supabaseKey,
@@ -72,6 +72,31 @@ export default async function middleware(req: NextRequest) {
       /<meta name="twitter:description" content="[^"]*"/,
       `<meta name="twitter:description" content="${escapeAttr(description)}"`
     )
+    // Build the OG image URL — use custom banner if set, otherwise dynamic OG endpoint
+    const firstTag = Array.isArray(article.tags) && article.tags.length ? article.tags[0] : ''
+    const ogImageUrl = article.banner_url
+      || `${url.origin}/api/og?title=${encodeURIComponent(title)}${firstTag ? `&tag=${encodeURIComponent(firstTag)}` : ''}`
+
+    // Replace og:image
+    html = html.replace(
+      /<meta property="og:image" content="[^"]*"/,
+      `<meta property="og:image" content="${escapeAttr(ogImageUrl)}"`
+    )
+
+    // Set twitter:card to summary_large_image for big preview
+    html = html.replace(
+      /<meta name="twitter:card" content="[^"]*"/,
+      `<meta name="twitter:card" content="summary_large_image"`
+    )
+
+    // Add twitter:image
+    if (!html.includes('twitter:image')) {
+      html = html.replace(
+        '</head>',
+        `<meta name="twitter:image" content="${escapeAttr(ogImageUrl)}" />\n</head>`
+      )
+    }
+
     // Add og:url if not present
     if (!html.includes('og:url')) {
       html = html.replace(

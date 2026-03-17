@@ -46,6 +46,11 @@ export default function ArticleView() {
     setMetaTag('og:url', window.location.href)
     setMetaTag('twitter:title', article.title)
     setMetaTag('twitter:description', excerpt)
+    setMetaTag('twitter:card', 'summary_large_image')
+    const bannerImage = article.banner_url
+      || `${window.location.origin}/api/og?title=${encodeURIComponent(article.title)}${article.author_name ? `&author=${encodeURIComponent(article.author_name)}` : ''}${article.tags.length ? `&tag=${encodeURIComponent(article.tags[0])}` : ''}`
+    setMetaTag('og:image', bannerImage)
+    setMetaTag('twitter:image', bannerImage)
     if (article.author_name) {
       setMetaTag('article:author', article.author_name)
     }
@@ -105,6 +110,18 @@ export default function ArticleView() {
         </button>
 
         <article className="fade-in-up">
+          {/* Hero banner */}
+          <div className="rounded-lg overflow-hidden mb-5" style={{ aspectRatio: '1200/630' }}>
+            <img
+              src={
+                article.banner_url
+                || `/api/og?title=${encodeURIComponent(article.title)}${article.author_name ? `&author=${encodeURIComponent(article.author_name)}` : ''}${article.tags.length ? `&tag=${encodeURIComponent(article.tags[0])}` : ''}`
+              }
+              alt={article.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+
           <h1 className="text-2xl font-bold mb-2" style={{ color: '#F0F0F7' }}>
             {article.title}
           </h1>

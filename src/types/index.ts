@@ -111,6 +111,7 @@ export interface Article {
   content: string
   tags: string[]
   pinned_session_id: string | null
+  banner_url: string | null
   published_at: string
   author_name?: string
 }

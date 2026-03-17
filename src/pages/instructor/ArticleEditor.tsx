@@ -4,7 +4,7 @@ import AppShell from '@/components/layout/AppShell'
 import MarkdownRenderer from '@/components/blog/MarkdownRenderer'
 import MarkdownToolbar from '@/components/blog/MarkdownToolbar'
 import { useAuth } from '@/lib/auth'
-import { createArticle, updateArticle, fetchMyArticles, deleteArticle } from '@/hooks/useArticles'
+import { createArticle, updateArticle, fetchMyArticles, deleteArticle, uploadBanner } from '@/hooks/useArticles'
 import type { Article } from '@/types'
 
 export default function ArticleEditor() {
@@ -24,6 +24,9 @@ export default function ArticleEditor() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tags, setTags] = useState('')
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null)
+  const [, setBannerFile] = useState<File | null>(null)
+  const [uploadingBanner, setUploadingBanner] = useState(false)
   const [saving, setSaving] = useState(false)
 
   const loadArticles = useCallback(async () => {
@@ -39,6 +42,8 @@ export default function ArticleEditor() {
     setTitle('')
     setContent('')
     setTags('')
+    setBannerUrl(null)
+    setBannerFile(null)
     setEditingId(null)
     setShowEditor(false)
   }
@@ -48,8 +53,27 @@ export default function ArticleEditor() {
     setTitle(a.title)
     setContent(a.content)
     setTags(a.tags.join(', '))
+    setBannerUrl(a.banner_url)
+    setBannerFile(null)
     setShowEditor(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  async function handleBannerSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file || !user) return
+    setBannerFile(file)
+    // Show local preview immediately
+    setBannerUrl(URL.createObjectURL(file))
+    // Upload in background
+    setUploadingBanner(true)
+    const { url, error } = await uploadBanner(file, user.id)
+    setUploadingBanner(false)
+    if (error) {
+      console.error('Banner upload failed:', error)
+      return
+    }
+    if (url) setBannerUrl(url)
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -66,6 +90,7 @@ export default function ArticleEditor() {
         content,
         tags: tagList,
         pinned_session_id: pinnedSessionId ?? null,
+        banner_url: bannerUrl,
       })
       if (error) {
         console.error(error)
@@ -77,7 +102,7 @@ export default function ArticleEditor() {
       }
     } else {
       // Create new article
-      const { article, error } = await createArticle(user.id, title, content, tagList, pinnedSessionId)
+      const { article, error } = await createArticle(user.id, title, content, tagList, pinnedSessionId, bannerUrl ?? undefined)
       if (error) {
         console.error(error)
       } else if (article) {
@@ -129,6 +154,55 @@ export default function ArticleEditor() {
         {/* Editor with live preview */}
         {showEditor && (
           <form onSubmit={handleSubmit} className="glass p-6 mb-6 space-y-4 fade-in-up">
+            {/* Banner upload */}
+            <div>
+              <label className="block text-xs font-medium mb-1.5" style={{ color: '#9090B0' }}>
+                Banner Image (optional)
+              </label>
+              {bannerUrl ? (
+                <div className="relative rounded-lg overflow-hidden mb-2" style={{ aspectRatio: '1200/630' }}>
+                  <img
+                    src={bannerUrl}
+                    alt="Banner preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    {uploadingBanner && (
+                      <span className="text-xs px-2 py-1 rounded" style={{ background: 'rgba(0,0,0,0.7)', color: '#9090B0' }}>
+                        Uploading…
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => { setBannerUrl(null); setBannerFile(null) }}
+                      className="text-xs px-2 py-1 rounded transition-colors hover:text-[#E8447A]"
+                      style={{ background: 'rgba(0,0,0,0.7)', color: '#9090B0' }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <label
+                  className="flex items-center justify-center gap-2 cursor-pointer rounded-lg border-2 border-dashed py-8 transition-colors hover:border-[#635BFF]"
+                  style={{ borderColor: '#2E2E45', background: 'rgba(13, 13, 18, 0.4)' }}
+                >
+                  <span className="text-sm" style={{ color: '#9090B0' }}>
+                    📷 Click to upload a banner image
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleBannerSelect}
+                    className="hidden"
+                  />
+                </label>
+              )}
+              <p className="text-[10px] mt-1" style={{ color: '#9090B0' }}>
+                Recommended: 1200×630px. If no banner is uploaded, one will be auto-generated.
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium mb-1.5" style={{ color: '#9090B0' }}>
