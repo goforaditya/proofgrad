@@ -26,6 +26,63 @@ export function setTelemetryUser(id: string | null, name?: string | null, email?
 }
 
 // ---------------------------------------------------------------------------
+// Device context (computed once per session, merged into every event)
+// ---------------------------------------------------------------------------
+interface DeviceContext {
+  screen: string
+  viewport: string
+  dpr: number
+  timezone: string
+  language: string
+  languages: string[]
+  platform: string
+  cores: number
+  memory: number | null
+  touch: boolean
+  device_type: 'mobile' | 'tablet' | 'desktop'
+  connection: string | null
+  online: boolean
+  user_agent: string
+}
+
+let _deviceCtx: DeviceContext | null = null
+
+function getDeviceContext(): DeviceContext {
+  if (_deviceCtx) return _deviceCtx
+
+  const ua = navigator.userAgent
+  const w = window.innerWidth
+  const touch = navigator.maxTouchPoints > 0
+  const device_type: DeviceContext['device_type'] =
+    touch && w < 768 ? 'mobile' : touch && w < 1024 ? 'tablet' : 'desktop'
+
+  // Connection API (Chrome/Edge/Android only)
+  const conn = (navigator as unknown as { connection?: { effectiveType?: string } }).connection
+  const connection = conn?.effectiveType ?? null
+
+  // Device memory (Chrome only, may be undefined)
+  const memory = (navigator as unknown as { deviceMemory?: number }).deviceMemory ?? null
+
+  _deviceCtx = {
+    screen: `${screen.width}x${screen.height}`,
+    viewport: `${w}x${window.innerHeight}`,
+    dpr: window.devicePixelRatio ?? 1,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    language: navigator.language,
+    languages: [...navigator.languages],
+    platform: navigator.platform,
+    cores: navigator.hardwareConcurrency ?? 0,
+    memory,
+    touch,
+    device_type,
+    connection,
+    online: navigator.onLine,
+    user_agent: ua,
+  }
+  return _deviceCtx
+}
+
+// ---------------------------------------------------------------------------
 // Event buffer
 // ---------------------------------------------------------------------------
 interface BufferedEvent {
@@ -41,6 +98,7 @@ interface BufferedEvent {
 let buffer: BufferedEvent[] = []
 
 export function track(event: string, meta: Record<string, unknown> = {}) {
+  const device = getDeviceContext()
   buffer.push({
     visitor_id: getVisitorId(),
     user_id: _userId,
@@ -48,7 +106,7 @@ export function track(event: string, meta: Record<string, unknown> = {}) {
     user_email: _userEmail,
     event,
     path: window.location.pathname,
-    meta,
+    meta: { ...device, ...meta },
   })
 
   // Auto-flush if buffer is large
