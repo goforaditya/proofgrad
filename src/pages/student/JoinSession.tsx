@@ -138,7 +138,7 @@ export default function JoinSession() {
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 required
-                placeholder="e.g. EconNerd42"
+                placeholder="e.g. John Meyers"
                 maxLength={30}
                 className="glass-input w-full px-4 py-2.5 text-sm"
               />

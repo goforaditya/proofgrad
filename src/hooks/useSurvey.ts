@@ -180,6 +180,112 @@ export async function uploadScreenshot(
 }
 
 // -------------------------------------------------------
+// Import CSV data as a pre-seeded survey + responses
+// -------------------------------------------------------
+export async function importCSVData(
+  sessionId: string,
+  csvText: string,
+  title: string = 'Imported Data'
+): Promise<{ survey: Survey | null; error: string | null }> {
+  // Parse CSV
+  const lines = csvText.trim().split('\n').map((l) => l.trim()).filter(Boolean)
+  if (lines.length < 2) return { survey: null, error: 'CSV must have a header row and at least one data row.' }
+
+  const headers = parseCSVLine(lines[0])
+  if (headers.length === 0) return { survey: null, error: 'No columns found in CSV header.' }
+
+  const dataLines = lines.slice(1)
+  const parsedRows = dataLines.map((line) => parseCSVLine(line))
+
+  // Detect column types from first 10 rows
+  const questions: SurveyQuestion[] = headers.map((label, colIdx) => {
+    const sample = parsedRows.slice(0, 10).map((r) => r[colIdx]).filter(Boolean)
+    const allNumeric = sample.length > 0 && sample.every((v) => !isNaN(Number(v)))
+    return allNumeric
+      ? { type: 'number' as const, label }
+      : { type: 'mcq' as const, label, options: [...new Set(sample)].slice(0, 20) }
+  })
+
+  // 1. Create survey record
+  const { data: surveyData, error: surveyErr } = await supabase
+    .from('surveys')
+    .insert({ session_id: sessionId, title, questions, is_active: false })
+    .select()
+    .single()
+
+  if (surveyErr || !surveyData) return { survey: null, error: surveyErr?.message ?? 'Failed to create survey.' }
+  const survey = surveyData as Survey
+
+  // 2. Create session_students for each row
+  const studentInserts = parsedRows.map((_, i) => ({
+    session_id: sessionId,
+    nickname: `Import_${i + 1}`,
+    is_guest: true,
+  }))
+
+  const { data: studentsData, error: studErr } = await supabase
+    .from('session_students')
+    .insert(studentInserts)
+    .select('id')
+
+  if (studErr || !studentsData) return { survey, error: studErr?.message ?? 'Failed to create student rows.' }
+
+  // 3. Insert responses
+  const responseInserts = parsedRows.map((row, i) => {
+    const answers: Record<number, string | number> = {}
+    headers.forEach((_, colIdx) => {
+      const val = row[colIdx] ?? ''
+      const num = Number(val)
+      answers[colIdx] = !isNaN(num) && val.trim() !== '' ? num : val
+    })
+    return {
+      survey_id: survey.id,
+      session_student_id: studentsData[i].id,
+      answers,
+    }
+  })
+
+  const { error: respErr } = await supabase.from('responses').insert(responseInserts)
+  if (respErr) return { survey, error: respErr.message }
+
+  return { survey, error: null }
+}
+
+/** Parse a single CSV line handling quoted fields */
+function parseCSVLine(line: string): string[] {
+  const result: string[] = []
+  let current = ''
+  let inQuotes = false
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i]
+    if (inQuotes) {
+      if (ch === '"') {
+        if (i + 1 < line.length && line[i + 1] === '"') {
+          current += '"'
+          i++
+        } else {
+          inQuotes = false
+        }
+      } else {
+        current += ch
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true
+      } else if (ch === ',') {
+        result.push(current.trim())
+        current = ''
+      } else {
+        current += ch
+      }
+    }
+  }
+  result.push(current.trim())
+  return result
+}
+
+// -------------------------------------------------------
 // Fetch active survey for a session
 // -------------------------------------------------------
 export async function fetchActiveSurvey(

@@ -7,9 +7,7 @@ import type { Session } from '@/types'
 
 const PHASE_COLORS: Record<string, string> = {
   lobby: '#9090B0',
-  survey: '#635BFF',
-  dataset: '#818CF8',
-  analysis: '#A5B4FC',
+  active: '#635BFF',
   ended: '#9090B0',
 }
 
