@@ -7,7 +7,6 @@ import {
   fetchActiveSurvey,
   submitSurveyResponse,
   hasStudentResponded,
-  uploadScreenshot,
 } from '@/hooks/useSurvey'
 import { fetchMySessionStudent } from '@/hooks/useSession'
 import { broadcastSessionEvent } from '@/lib/realtime'
@@ -26,11 +25,8 @@ export default function SurveyForm() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [answers, setAnswers] = useState<AnswerMap>({})
-  const [screenshotFiles, setScreenshotFiles] = useState<Record<number, File>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const [ocrProcessing, setOcrProcessing] = useState(false)
-  const [ocrResults, setOcrResults] = useState<Record<number, string>>({})
 
   // Resolve sessionStudentId for logged-in users who don't have guestState
   useEffect(() => {
@@ -65,57 +61,6 @@ export default function SurveyForm() {
     setAnswers((prev) => ({ ...prev, [index]: value }))
   }
 
-  function handleScreenshotFile(index: number, file: File) {
-    setScreenshotFiles((prev) => ({ ...prev, [index]: file }))
-    runOCR(index, file)
-  }
-
-  async function runOCR(index: number, file: File) {
-    setOcrProcessing(true)
-    try {
-      // Dynamic import to keep bundle light
-      const Tesseract = await import('tesseract.js')
-      const result = await Tesseract.recognize(file, 'eng', {
-        logger: () => {}, // suppress logs
-      })
-      const text = result.data.text
-      setOcrResults((prev) => ({ ...prev, [index]: text }))
-
-      // Try to extract total screen time from OCR text
-      const extracted = extractScreenTime(text)
-      if (extracted !== null) {
-        setAnswers((prev) => ({ ...prev, [index]: extracted }))
-      } else {
-        setAnswers((prev) => ({ ...prev, [index]: text }))
-      }
-    } catch {
-      // OCR failed, just store the file reference
-      setAnswers((prev) => ({ ...prev, [index]: 'screenshot_uploaded' }))
-    } finally {
-      setOcrProcessing(false)
-    }
-  }
-
-  // Extract screen time in hours from OCR text
-  function extractScreenTime(text: string): number | null {
-    // Match patterns like "7h 23m", "7 hr 23 min", "7:23", "7 hours", etc.
-    const patterns = [
-      /(\d+)\s*h(?:ours?|r(?:s)?)?\s*(\d+)\s*m(?:in(?:utes?)?)?/i,
-      /(\d+)\s*:\s*(\d+)/,
-      /(\d+)\s*h(?:ours?|r(?:s)?)?/i,
-    ]
-
-    for (const pat of patterns) {
-      const match = text.match(pat)
-      if (match) {
-        const hours = parseInt(match[1], 10)
-        const minutes = match[2] ? parseInt(match[2], 10) : 0
-        return Math.round((hours + minutes / 60) * 10) / 10
-      }
-    }
-    return null
-  }
-
   async function handleSubmit() {
     if (!survey || submitting) return
     if (!sessionStudentId) {
@@ -125,7 +70,7 @@ export default function SurveyForm() {
 
     // Validate required answers
     const unanswered = survey.questions.findIndex((q, i) => {
-      if (q.type === 'screenshot') return false // optional
+      if (q.type === 'screenshot') return false // optional legacy
       return answers[i] === undefined || answers[i] === ''
     })
     if (unanswered >= 0) {
@@ -136,25 +81,7 @@ export default function SurveyForm() {
     setSubmitting(true)
     setError(null)
 
-    // Build a local copy of answers that we'll mutate for screenshots
-    const finalAnswers: AnswerMap = { ...answers }
-
-    // Upload screenshots first
-    for (const [idx, file] of Object.entries(screenshotFiles)) {
-      const { url, error: uploadErr } = await uploadScreenshot(file, sessionId!, sessionStudentId)
-      if (url) {
-        finalAnswers[idx] = JSON.stringify({
-          url,
-          ocr_text: ocrResults[Number(idx)] ?? null,
-          extracted_value: answers[Number(idx)],
-        })
-      }
-      if (uploadErr) {
-        console.warn('Screenshot upload failed:', uploadErr)
-      }
-    }
-
-    const { error: err } = await submitSurveyResponse(survey.id, sessionStudentId, finalAnswers)
+    const { error: err } = await submitSurveyResponse(survey.id, sessionStudentId, answers)
     if (err) {
       setError(err)
       setSubmitting(false)
@@ -298,44 +225,14 @@ export default function SurveyForm() {
               index={i}
               value={(answers[i] as string | number) ?? null}
               onChange={handleAnswer}
-              onScreenshotFile={handleScreenshotFile}
             />
           ))}
         </div>
 
-        {/* OCR processing indicator */}
-        {ocrProcessing && (
-          <div className="glass p-4 mb-4 flex items-center gap-3 fade-in-up">
-            <div className="liquid-spinner" style={{ width: 20, height: 20 }} />
-            <span className="text-sm" style={{ color: '#9090B0' }}>
-              Extracting screen time from screenshot…
-            </span>
-          </div>
-        )}
-
-        {/* OCR results display */}
-        {Object.keys(ocrResults).length > 0 && (
-          <div className="glass p-4 mb-4 fade-in-up">
-            <p className="text-xs font-medium mb-2" style={{ color: '#635BFF' }}>
-              📊 Extracted from screenshot
-            </p>
-            {Object.entries(ocrResults).map(([idx, text]) => {
-              const extracted = extractScreenTime(text)
-              return (
-                <div key={idx} className="text-xs mb-1" style={{ color: '#9090B0' }}>
-                  {extracted !== null
-                    ? `Screen time: ${extracted} hours`
-                    : 'Could not extract screen time automatically. The raw text has been saved.'}
-                </div>
-              )
-            })}
-          </div>
-        )}
-
         {/* Submit */}
         <button
           onClick={handleSubmit}
-          disabled={submitting || ocrProcessing}
+          disabled={submitting}
           className="btn-liquid w-full py-3 text-base"
         >
           {submitting ? 'Submitting…' : 'Submit response'}

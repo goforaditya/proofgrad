@@ -6,7 +6,9 @@ import {
   fetchSessionByCode,
   joinSession,
   buildGuestState,
+  fetchSessionById,
 } from '@/hooks/useSession'
+import { supabase } from '@/lib/supabase'
 import { track } from '@/lib/telemetry'
 
 export default function JoinSession() {
@@ -27,7 +29,43 @@ export default function JoinSession() {
     }
   }, [searchParams])
 
-  // Track whether guest has an existing session (don't auto-redirect)
+  // Auto-redirect if user already has an active session
+  useEffect(() => {
+    // Don't redirect if joining with a specific QR code
+    if (searchParams.get('code')) return
+
+    async function checkExisting() {
+      // Guest with existing session → redirect
+      if (!user && guestState?.sessionId) {
+        const { session } = await fetchSessionById(guestState.sessionId)
+        if (session && session.status === 'active') {
+          navigate(`/student/session/${guestState.sessionId}`, { replace: true })
+          return
+        }
+      }
+
+      // Logged-in user → check if they have an active session_student record
+      if (user) {
+        const { data } = await supabase
+          .from('session_students')
+          .select('session_id')
+          .eq('user_id', user.id)
+          .order('joined_at', { ascending: false })
+          .limit(1)
+          .single()
+        if (data) {
+          const { session } = await fetchSessionById(data.session_id)
+          if (session && session.status === 'active') {
+            navigate(`/student/session/${data.session_id}`, { replace: true })
+            return
+          }
+        }
+      }
+    }
+
+    checkExisting()
+  }, [user, guestState, searchParams, navigate])
+
   const hasExistingSession = !user && !!guestState?.sessionId
 
   async function handleJoin(e: FormEvent) {

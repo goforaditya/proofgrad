@@ -112,15 +112,6 @@ export default function SessionControl() {
     { type: 'time', label: 'Total Screen Time Yesterday', helpText: "Open your phone's Screen Time (iOS) or Digital Wellbeing (Android) and enter your total screen time for yesterday." },
     { type: 'number', label: 'Total Device Pickups / Times Unlocked', helpText: 'How many times did you pick up or unlock your phone yesterday?', min: 0 },
     { type: 'number', label: 'Total Notifications Received', helpText: 'How many total notifications did you receive yesterday?', min: 0 },
-    // Section 3: App-Level Utility
-    { type: 'text', label: 'Top App #1 (Most Used)', helpText: 'Name of the app (e.g., Instagram, YouTube, WhatsApp).', section: 'App-Level Utility' },
-    { type: 'number', label: 'Time Spent on Top App #1 (minutes)', helpText: 'Convert the time to total minutes (e.g., 1 hour 15 mins = 75).', min: 0 },
-    { type: 'text', label: 'Top App #2', helpText: 'Name of the second most used app.' },
-    { type: 'number', label: 'Time Spent on Top App #2 (minutes)', min: 0 },
-    { type: 'text', label: 'Top App #3', helpText: 'Name of the third most used app.' },
-    { type: 'number', label: 'Time Spent on Top App #3 (minutes)', min: 0 },
-    { type: 'text', label: 'Top App #4', helpText: 'Name of the fourth most used app.' },
-    { type: 'number', label: 'Time Spent on Top App #4 (minutes)', min: 0 },
   ])
   const [creating, setCreating] = useState(false)
   const [activeSurvey, setActiveSurvey] = useState<Survey | null>(null)
@@ -306,6 +297,7 @@ export default function SessionControl() {
             return parsed.extracted_value ?? parsed.ocr_text ?? 'uploaded'
           } catch { return typeof val === 'string' && val.length > 50 ? 'uploaded' : val }
         }
+        // Time type: stored as total minutes, keep as number for CSV/analysis
         return val
       })
       return { rowNum: i + 1, nickname: student?.nickname ?? `Student ${i + 1}`, sessionStudentId: r.session_student_id, values: values as (string | number)[] }
@@ -650,10 +642,12 @@ export default function SessionControl() {
                 </div>
               )}
 
-              {/* Header + new survey button */}
+              {/* Header + new survey button (always show, even when active survey exists) */}
               {!showBuilder && (
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base font-semibold" style={{ color: '#F0F0F7' }}>Surveys</h2>
+                  <h2 className="text-base font-semibold" style={{ color: '#F0F0F7' }}>
+                    {activeSurvey ? 'Other Surveys' : 'Surveys'}
+                  </h2>
                   <button onClick={() => setShowBuilder(true)} className="btn-liquid px-4 py-2 text-sm">+ New survey</button>
                 </div>
               )}
