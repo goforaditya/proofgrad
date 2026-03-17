@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth'
 import { fetchArticles } from '@/hooks/useArticles'
 import { fetchResourceLinks, fetchReactionsForLinks } from '@/hooks/useResources'
 import { supabase } from '@/lib/supabase'
+import { track } from '@/lib/telemetry'
 import type { Article, ResourceLink, LinkReaction } from '@/types'
 
 const NICHE_COLORS: Record<string, { bg: string; text: string; activeBg: string }> = {}
@@ -386,6 +387,7 @@ export default function LandingPage() {
                         rel="noopener noreferrer"
                         className="text-sm font-medium hover:underline"
                         style={{ color: '#F0F0F7' }}
+                        onClick={() => track('resource_click', { link_id: link.id, niche: link.niche })}
                       >
                         {link.title}
                       </a>

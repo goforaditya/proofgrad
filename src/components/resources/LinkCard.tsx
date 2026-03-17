@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth'
 import { toggleReaction, fetchLinkComments, createLinkComment, deleteLinkComment } from '@/hooks/useResources'
+import { track } from '@/lib/telemetry'
 import type { ResourceLink, LinkReaction, LinkComment, ReactionEmoji } from '@/types'
 
 const EMOJIS: { emoji: ReactionEmoji; icon: string }[] = [
@@ -42,6 +43,7 @@ export default function LinkCard({ link, reactions, profileCompleted, onReaction
 
     let updated: LinkReaction[]
     if (added) {
+      track('reaction', { link_id: link.id, emoji })
       updated = [...reactions, { id: crypto.randomUUID(), link_id: link.id, user_id: user.id, emoji, created_at: new Date().toISOString() }]
     } else {
       updated = reactions.filter((r) => !(r.emoji === emoji && r.user_id === user.id))

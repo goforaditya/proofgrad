@@ -4,6 +4,7 @@ import AppShell from '@/components/layout/AppShell'
 import MarkdownRenderer from '@/components/blog/MarkdownRenderer'
 import CommentSection from '@/components/blog/CommentSection'
 import { fetchArticleBySlug } from '@/hooks/useArticles'
+import { getViewCount } from '@/lib/telemetry'
 import type { Article } from '@/types'
 
 function setMetaTag(property: string, content: string) {
@@ -23,12 +24,16 @@ export default function ArticleView() {
   const [article, setArticle] = useState<Article | null>(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [views, setViews] = useState<number>(0)
 
   const load = useCallback(async () => {
     if (!slug) return
     const { article: a } = await fetchArticleBySlug(slug)
     setArticle(a)
     setLoading(false)
+    if (a) {
+      getViewCount(`/blog/${slug}`).then(setViews)
+    }
   }, [slug])
 
   useEffect(() => { load() }, [load])
@@ -136,6 +141,12 @@ export default function ArticleView() {
               <span>{new Date(article.published_at).toLocaleDateString()}</span>
               <span>·</span>
               <span>{readTime} min read</span>
+              {views > 0 && (
+                <>
+                  <span>·</span>
+                  <span>{views} view{views !== 1 ? 's' : ''}</span>
+                </>
+              )}
             </div>
             <button
               onClick={handleShare}

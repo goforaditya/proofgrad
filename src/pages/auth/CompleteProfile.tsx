@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
+import { track } from '@/lib/telemetry'
 import type { Accommodation } from '@/types'
 
 const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year']
@@ -53,6 +54,7 @@ export default function CompleteProfile() {
       return
     }
 
+    track('profile_complete')
     await refreshUser()
     navigate('/', { replace: true })
   }

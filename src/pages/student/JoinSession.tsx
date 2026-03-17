@@ -7,6 +7,7 @@ import {
   joinSession,
   buildGuestState,
 } from '@/hooks/useSession'
+import { track } from '@/lib/telemetry'
 
 export default function JoinSession() {
   const { guestState, user, setGuestSession } = useAuth()
@@ -80,7 +81,10 @@ export default function JoinSession() {
       setGuestSession(guest)
     }
 
-    // 4. Navigate to session view
+    // 4. Track join event
+    track('session_join', { join_code: trimmedCode })
+
+    // 5. Navigate to session view
     setJoining(false)
     navigate(`/student/session/${session.id}`)
   }

@@ -8,6 +8,7 @@ import {
 } from 'react'
 import type { Session as SupabaseSession } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { setTelemetryUser } from '@/lib/telemetry'
 import type { User, UserRole, GuestState } from '@/types'
 
 // -------------------------------------------------------
@@ -78,7 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .select('*')
       .eq('id', userId)
       .single()
-    setUser(data as User | null)
+    const u = data as User | null
+    setUser(u)
+    if (u) {
+      setTelemetryUser(u.id, u.name, u.email)
+    }
   }, [])
 
   useEffect(() => {
@@ -146,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut()
     setUser(null)
     setSession(null)
+    setTelemetryUser(null)
   }, [])
 
   const refreshUser = useCallback(async () => {

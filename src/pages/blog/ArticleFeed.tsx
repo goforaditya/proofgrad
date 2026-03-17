@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import { fetchArticles } from '@/hooks/useArticles'
+import { getViewCounts } from '@/lib/telemetry'
 import type { Article } from '@/types'
 
 export default function ArticleFeed() {
@@ -10,10 +11,14 @@ export default function ArticleFeed() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set())
+  const [viewCounts, setViewCounts] = useState<Record<string, number>>({})
 
   const load = useCallback(async () => {
     const list = await fetchArticles()
     setArticles(list)
+    // Fetch view counts for all article paths
+    const paths = list.map((a) => `/blog/${a.slug}`)
+    getViewCounts(paths).then(setViewCounts)
     setLoading(false)
   }, [])
 
@@ -147,6 +152,12 @@ export default function ArticleFeed() {
                   <span>{new Date(a.published_at).toLocaleDateString()}</span>
                   <span>·</span>
                   <span>{readTime(a.content)} min read</span>
+                  {(viewCounts[`/blog/${a.slug}`] ?? 0) > 0 && (
+                    <>
+                      <span>·</span>
+                      <span>{viewCounts[`/blog/${a.slug}`]} view{viewCounts[`/blog/${a.slug}`] !== 1 ? 's' : ''}</span>
+                    </>
+                  )}
                 </div>
                 {a.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-2">

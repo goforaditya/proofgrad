@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { usePageView } from '@/lib/usePageView'
 
 // Landing
 import LandingPage from '@/pages/LandingPage'
@@ -36,9 +37,15 @@ import ArticleView from '@/pages/blog/ArticleView'
 // Resources
 import ResourcesPage from '@/pages/resources/ResourcesPage'
 
+function PageViewTracker() {
+  usePageView()
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <PageViewTracker />
       <Routes>
         {/* Landing page */}
         <Route path="/" element={<LandingPage />} />
