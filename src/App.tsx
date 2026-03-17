@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
 import { usePageView } from '@/lib/usePageView'
 
 // Landing
@@ -129,6 +129,9 @@ export default function App() {
           }
         />
 
+        {/* Legacy redirect: old /student/analysis?session=X → correct route */}
+        <Route path="/student/analysis" element={<LegacyAnalysisRedirect />} />
+
         {/* User/session routes (public — guests allowed) */}
         <Route path="/join" element={<JoinSession />} />
         {/* Legacy redirect */}
@@ -155,6 +158,16 @@ export default function App() {
       </Routes>
     </BrowserRouter>
   )
+}
+
+/** Redirect old /student/analysis?session=X → /student/session/X/analysis */
+function LegacyAnalysisRedirect() {
+  const [searchParams] = useSearchParams()
+  const sessionId = searchParams.get('session')
+  if (sessionId) {
+    return <Navigate to={`/student/session/${sessionId}/analysis`} replace />
+  }
+  return <Navigate to="/" replace />
 }
 
 function Unauthorized() {
