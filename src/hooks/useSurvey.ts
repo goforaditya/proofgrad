@@ -180,6 +180,22 @@ export async function uploadScreenshot(
 }
 
 // -------------------------------------------------------
+// Delete a survey and all its responses
+// -------------------------------------------------------
+export async function deleteSurvey(
+  surveyId: string
+): Promise<{ error: string | null }> {
+  // Responses cascade-delete via FK, so just delete the survey
+  const { error } = await supabase
+    .from('surveys')
+    .delete()
+    .eq('id', surveyId)
+
+  if (error) return { error: error.message }
+  return { error: null }
+}
+
+// -------------------------------------------------------
 // Import CSV data as a pre-seeded survey + responses
 // -------------------------------------------------------
 export async function importCSVData(

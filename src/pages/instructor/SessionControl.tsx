@@ -17,6 +17,7 @@ import {
   deactivateSurvey,
   getResponseCount,
   importCSVData,
+  deleteSurvey,
 } from '@/hooks/useSurvey'
 import {
   buildDatasetColumns,
@@ -110,6 +111,8 @@ export default function SessionControl() {
   const [responseCount, setResponseCount] = useState(0)
   const [launching, setLaunching] = useState(false)
   const [closing, setClosing] = useState(false)
+  const [deletingSurveyId, setDeletingSurveyId] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   // Data tab state
   const [dataSurvey, setDataSurvey] = useState<Survey | null>(null)
@@ -250,6 +253,18 @@ export default function SessionControl() {
     if (err) { setError(err); setClosing(false); return }
     setActiveSurvey(null)
     setClosing(false)
+  }
+
+  async function handleDeleteSurvey(surveyId: string) {
+    setDeletingSurveyId(surveyId)
+    setError(null)
+    const { error: err } = await deleteSurvey(surveyId)
+    if (err) { setError(err); setDeletingSurveyId(null); setConfirmDeleteId(null); return }
+    setSurveys((prev) => prev.filter((s) => s.id !== surveyId))
+    if (dataSurvey?.id === surveyId) { setDataSurvey(null); setDataRows([]) }
+    if (analysisSurvey?.id === surveyId) { setAnalysisSurvey(null); setColumns([]); setActiveCharts([]) }
+    setDeletingSurveyId(null)
+    setConfirmDeleteId(null)
   }
 
   // ---- Data tab ----
@@ -654,6 +669,33 @@ export default function SessionControl() {
                           {!activeSurvey && (
                             <button onClick={() => handleLaunchSurvey(sv)} disabled={launching} className="btn-liquid px-4 py-1.5 text-xs">
                               {launching ? 'Launching…' : 'Launch'}
+                            </button>
+                          )}
+                          {confirmDeleteId === sv.id ? (
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => handleDeleteSurvey(sv.id)}
+                                disabled={deletingSurveyId === sv.id}
+                                className="px-3 py-1.5 text-xs rounded-lg font-medium"
+                                style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}
+                              >
+                                {deletingSurveyId === sv.id ? 'Deleting…' : 'Confirm'}
+                              </button>
+                              <button
+                                onClick={() => setConfirmDeleteId(null)}
+                                className="btn-ghost px-2 py-1.5 text-xs"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setConfirmDeleteId(sv.id)}
+                              className="px-2 py-1.5 text-xs rounded-lg transition-colors hover:bg-[rgba(239,68,68,0.1)]"
+                              style={{ color: '#9090B0' }}
+                              title="Delete survey and all responses"
+                            >
+                              🗑
                             </button>
                           )}
                         </div>
