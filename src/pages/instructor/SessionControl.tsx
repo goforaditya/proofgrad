@@ -605,7 +605,7 @@ export default function SessionControl() {
               )}
 
               {/* Survey builder */}
-              {showBuilder && !activeSurvey && (
+              {showBuilder && (
                 <div className="mb-6">
                   <div className="glass-strong p-6 mb-4">
                     <h2 className="text-lg font-bold mb-4" style={{ color: '#F0F0F7' }}>Build your survey</h2>
@@ -635,7 +635,7 @@ export default function SessionControl() {
               )}
 
               {/* Header + new survey button */}
-              {!showBuilder && !activeSurvey && (
+              {!showBuilder && (
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base font-semibold" style={{ color: '#F0F0F7' }}>Surveys</h2>
                   <button onClick={() => setShowBuilder(true)} className="btn-liquid px-4 py-2 text-sm">+ New survey</button>
@@ -643,15 +643,18 @@ export default function SessionControl() {
               )}
 
               {/* Saved surveys list */}
-              {!showBuilder && (
+              {!showBuilder && (() => {
+                const otherSurveys = surveys.filter((sv) => sv.id !== activeSurvey?.id)
+                return (
                 <div className="flex flex-col gap-3">
-                  {surveys.length === 0 && !activeSurvey ? (
+                  {otherSurveys.length === 0 ? (
                     <div className="glass p-8 text-center" style={{ borderStyle: 'dashed' }}>
-                      <p className="text-lg mb-2" style={{ color: '#9090B0' }}>No surveys yet</p>
-                      <p className="text-sm" style={{ color: '#9090B0' }}>Create a survey to collect data from your students.</p>
+                      <p className="text-sm" style={{ color: '#9090B0' }}>
+                        {surveys.length === 0 ? 'No surveys yet. Create one to collect data.' : 'No other surveys.'}
+                      </p>
                     </div>
                   ) : (
-                    surveys.filter((sv) => sv.id !== activeSurvey?.id).map((sv) => (
+                    otherSurveys.map((sv) => (
                       <div key={sv.id} className="glass p-4 flex items-center justify-between">
                         <div>
                           <h3 className="text-sm font-semibold" style={{ color: '#F0F0F7' }}>{sv.title}</h3>
@@ -703,7 +706,8 @@ export default function SessionControl() {
                     ))
                   )}
                 </div>
-              )}
+                )
+              })()}
             </div>
           )}
 
