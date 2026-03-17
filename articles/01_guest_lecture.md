@@ -263,3 +263,14 @@ If you want to start building this skillset, here is where I recommend you look:
 * **Daily Reading:** Subscribe to *Towards Data Science* and Andrew Ng's *The Batch* to see how AI and data are evolving every week.
 * **Mindset:** Read *Everybody Lies* by Seth Stephens-Davidowitz to see how search data reveals hidden human truths
 
+
+## Q&A and Proofgrad Insider Access
+
+### Instagram:
+![alt text](jaggijinsta.png)
+
+### Snap -> **jaggi_j**
+
+### LinkedIn https://www.linkedin.com/in/jagdish-singh/
+
+### WP +919660571934
