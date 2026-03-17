@@ -8,6 +8,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', to: '/instructor/dashboard', icon: '⊞' },
+  { label: 'Resources', to: '/instructor/resources', icon: '🔗' },
 ]
 
 interface Props {

@@ -9,7 +9,7 @@ import {
   deactivateSurvey,
   getResponseCount,
 } from '@/hooks/useSurvey'
-import { fetchSessionById, advancePhase } from '@/hooks/useSession'
+import { fetchSessionById } from '@/hooks/useSession'
 import { broadcastSessionEvent, subscribeToResponseCount } from '@/lib/realtime'
 import type { Session, Survey, SurveyQuestion } from '@/types'
 
@@ -123,14 +123,7 @@ export default function SurveyBuilder() {
     const { error: err } = await activateSurvey(survey.id)
     if (err) { setError(err); setLaunching(false); return }
 
-    // Move session to survey phase if needed
-    if (session.phase !== 'survey') {
-      await advancePhase(session.id, 'survey')
-      await broadcastSessionEvent(session.id, { type: 'phase_change', phase: 'survey' })
-      setSession((s) => s ? { ...s, phase: 'survey' } : null)
-    }
-
-    // Broadcast survey launch
+    // Broadcast survey launch (no phase change — session stays 'active')
     await broadcastSessionEvent(session.id, { type: 'survey_launched', surveyId: survey.id })
 
     setActiveSurvey({ ...survey, is_active: true })
@@ -145,11 +138,7 @@ export default function SurveyBuilder() {
     const { error: err } = await deactivateSurvey(activeSurvey.id)
     if (err) { setError(err); setClosing(false); return }
 
-    // Move to dataset phase
-    await advancePhase(session.id, 'dataset')
-    await broadcastSessionEvent(session.id, { type: 'phase_change', phase: 'dataset' })
-    setSession((s) => s ? { ...s, phase: 'dataset' } : null)
-
+    // No phase change — session stays 'active', dataset is always available
     setActiveSurvey(null)
     setClosing(false)
   }
@@ -230,7 +219,7 @@ export default function SurveyBuilder() {
               className="btn-liquid w-full py-2.5"
               style={{ background: 'linear-gradient(135deg, #4F46E5, #8B1A3E)' }}
             >
-              {closing ? 'Closing…' : 'Close survey & release dataset'}
+              {closing ? 'Closing…' : 'Close survey'}
             </button>
           </div>
         )}

@@ -5,20 +5,16 @@ import AppShell from '@/components/layout/AppShell'
 import {
   fetchSessionById,
   fetchSessionStudents,
-  advancePhase,
+  startSession,
   endSession,
 } from '@/hooks/useSession'
 import { broadcastSessionEvent } from '@/lib/realtime'
 import { supabase } from '@/lib/supabase'
-import type { Session, SessionStudent, SessionPhase } from '@/types'
+import type { Session, SessionStudent } from '@/types'
 
-const PHASE_ORDER: SessionPhase[] = ['lobby', 'survey', 'dataset', 'analysis', 'ended']
-
-const PHASE_LABELS: Record<SessionPhase, string> = {
+const STATUS_LABELS: Record<string, string> = {
   lobby: 'Lobby',
-  survey: 'Survey',
-  dataset: 'Dataset',
-  analysis: 'Analysis',
+  active: 'Live',
   ended: 'Ended',
 }
 
@@ -30,7 +26,7 @@ export default function SessionControl() {
   const [students, setStudents] = useState<SessionStudent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [advancing, setAdvancing] = useState(false)
+  const [acting, setActing] = useState(false)
 
   const joinUrl = session
     ? `${window.location.origin}/join?code=${session.join_code}`
@@ -79,30 +75,36 @@ export default function SessionControl() {
     }
   }, [sessionId])
 
-  async function handleAdvance() {
-    if (!session || advancing) return
-    const idx = PHASE_ORDER.indexOf(session.phase)
-    if (idx < 0 || idx >= PHASE_ORDER.length - 1) return
+  async function handleStart() {
+    if (!session || acting) return
+    setActing(true)
 
-    const nextPhase = PHASE_ORDER[idx + 1]
-    setAdvancing(true)
+    const { error: err } = await startSession(session.id)
+    if (err) { setError(err); setActing(false); return }
 
-    if (nextPhase === 'ended') {
-      const { error: err } = await endSession(session.id)
-      if (err) { setError(err); setAdvancing(false); return }
-    } else {
-      const { error: err } = await advancePhase(session.id, nextPhase)
-      if (err) { setError(err); setAdvancing(false); return }
-    }
-
-    // Broadcast to connected students
     await broadcastSessionEvent(session.id, {
       type: 'phase_change',
-      phase: nextPhase,
+      phase: 'active',
     })
 
-    setSession((s) => s ? { ...s, phase: nextPhase, status: nextPhase === 'ended' ? 'ended' : s.status } : null)
-    setAdvancing(false)
+    setSession((s) => s ? { ...s, phase: 'active' } : null)
+    setActing(false)
+  }
+
+  async function handleEnd() {
+    if (!session || acting) return
+    setActing(true)
+
+    const { error: err } = await endSession(session.id)
+    if (err) { setError(err); setActing(false); return }
+
+    await broadcastSessionEvent(session.id, {
+      type: 'phase_change',
+      phase: 'ended',
+    })
+
+    setSession((s) => s ? { ...s, phase: 'ended', status: 'ended' } : null)
+    setActing(false)
   }
 
   function copyCode() {
@@ -140,8 +142,9 @@ export default function SessionControl() {
     )
   }
 
-  const currentIdx = PHASE_ORDER.indexOf(session.phase)
   const isEnded = session.phase === 'ended'
+  const isLobby = session.phase === 'lobby'
+  const isActive = session.phase === 'active'
 
   return (
     <AppShell showSidebar fullWidth>
@@ -155,9 +158,9 @@ export default function SessionControl() {
               {session.title}
             </h1>
             <div className="flex items-center gap-2 text-sm" style={{ color: '#9090B0' }}>
-              <span>Phase:</span>
-              <span className={isEnded ? 'badge-muted' : 'badge-glow'}>
-                {PHASE_LABELS[session.phase]}
+              <span>Status:</span>
+              <span className={isEnded ? 'badge-muted' : isActive ? 'badge-glow' : 'badge-muted'}>
+                {STATUS_LABELS[session.phase] ?? session.phase}
               </span>
             </div>
           </div>
@@ -168,15 +171,10 @@ export default function SessionControl() {
               JOIN CODE
             </label>
             <div className="flex items-center gap-2">
-              <span
-                className="font-mono text-2xl tracking-widest font-bold glow-text"
-              >
+              <span className="font-mono text-2xl tracking-widest font-bold glow-text">
                 {session.join_code}
               </span>
-              <button
-                onClick={copyCode}
-                className="btn-ghost text-xs px-2 py-1"
-              >
+              <button onClick={copyCode} className="btn-ghost text-xs px-2 py-1">
                 Copy
               </button>
             </div>
@@ -194,10 +192,7 @@ export default function SessionControl() {
               >
                 {joinUrl}
               </span>
-              <button
-                onClick={copyLink}
-                className="btn-ghost text-xs px-2 py-1 shrink-0"
-              >
+              <button onClick={copyLink} className="btn-ghost text-xs px-2 py-1 shrink-0">
                 Copy
               </button>
             </div>
@@ -216,8 +211,8 @@ export default function SessionControl() {
             </p>
           </div>
 
-          {/* Session management links */}
-          {!isEnded && (
+          {/* Session management — all visible when active */}
+          {isActive && (
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => navigate(`/instructor/session/${sessionId}/survey`)}
@@ -231,69 +226,46 @@ export default function SessionControl() {
               >
                 <span>📝</span> Lecture notes
               </button>
-              {(session.phase === 'dataset' || session.phase === 'analysis' || session.phase === 'ended') && (
-                <>
-                  <button
-                    onClick={() => navigate(`/instructor/session/${sessionId}/dataset`)}
-                    className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
-                  >
-                    <span>📊</span> View dataset
-                  </button>
-                  <button
-                    onClick={() => navigate(`/instructor/session/${sessionId}/analysis`)}
-                    className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
-                  >
-                    <span>✨</span> Analysis workspace
-                  </button>
-                </>
-              )}
+              <button
+                onClick={() => navigate(`/instructor/session/${sessionId}/dataset`)}
+                className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
+              >
+                <span>📊</span> View dataset
+              </button>
+              <button
+                onClick={() => navigate(`/instructor/session/${sessionId}/analysis`)}
+                className="btn-ghost w-full py-2.5 text-sm flex items-center justify-center gap-2"
+              >
+                <span>✨</span> Analysis workspace
+              </button>
             </div>
           )}
 
-          {/* Phase control */}
-          {!isEnded && (
+          {/* Session control */}
+          {isLobby && (
             <div>
-              <label className="block text-xs font-medium mb-2" style={{ color: '#9090B0' }}>
-                PHASE CONTROL
-              </label>
-              <div className="flex flex-col gap-1.5 mb-4">
-                {PHASE_ORDER.map((p, i) => {
-                  const isActive = i === currentIdx
-                  const isPast = i < currentIdx
-                  return (
-                    <div key={p} className="flex items-center gap-2 text-xs py-1">
-                      <div
-                        className={`phase-step-circle ${
-                          isActive ? 'active' : isPast ? 'past' : 'future'
-                        }`}
-                      >
-                        {isPast ? '✓' : i + 1}
-                      </div>
-                      <span
-                        style={{ color: isActive ? '#F0F0F7' : '#9090B0' }}
-                      >
-                        {PHASE_LABELS[p]}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-
               <button
-                onClick={handleAdvance}
-                disabled={advancing || isEnded}
+                onClick={handleStart}
+                disabled={acting}
                 className="btn-liquid w-full py-2.5"
-                style={
-                  currentIdx === PHASE_ORDER.length - 2
-                    ? { background: 'linear-gradient(135deg, #4F46E5, #8B1A3E)' }
-                    : undefined
-                }
               >
-                {advancing
-                  ? 'Advancing…'
-                  : currentIdx === PHASE_ORDER.length - 2
-                  ? 'End session'
-                  : `Advance to ${PHASE_LABELS[PHASE_ORDER[currentIdx + 1]]}`}
+                {acting ? 'Starting…' : '🚀 Start Session'}
+              </button>
+              <p className="text-[10px] mt-2 text-center" style={{ color: '#9090B0' }}>
+                Survey, dataset, and analysis will all become available simultaneously.
+              </p>
+            </div>
+          )}
+
+          {isActive && (
+            <div>
+              <button
+                onClick={handleEnd}
+                disabled={acting}
+                className="btn-liquid w-full py-2.5"
+                style={{ background: 'linear-gradient(135deg, #4F46E5, #8B1A3E)' }}
+              >
+                {acting ? 'Ending…' : 'End session'}
               </button>
             </div>
           )}
@@ -306,10 +278,7 @@ export default function SessionControl() {
           </h2>
 
           {students.length === 0 ? (
-            <div
-              className="glass p-8 text-center"
-              style={{ borderStyle: 'dashed' }}
-            >
+            <div className="glass p-8 text-center" style={{ borderStyle: 'dashed' }}>
               <p className="text-lg mb-2" style={{ color: '#9090B0' }}>
                 Waiting for students to join…
               </p>
@@ -320,10 +289,7 @@ export default function SessionControl() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {students.map((s) => (
-                <div
-                  key={s.id}
-                  className="glass flex items-center gap-3 px-4 py-3 fade-in-up"
-                >
+                <div key={s.id} className="glass flex items-center gap-3 px-4 py-3 fade-in-up">
                   <div className="avatar-glow w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold">
                     {s.nickname.charAt(0).toUpperCase()}
                   </div>

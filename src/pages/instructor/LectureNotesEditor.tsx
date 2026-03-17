@@ -2,15 +2,15 @@ import { useState, useEffect, useCallback, type FormEvent } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import AppShell from '@/components/layout/AppShell'
 import { fetchAllLectureNotes, upsertLectureNote } from '@/hooks/useLectureNotes'
-import type { LectureNoteContent, SessionPhase } from '@/types'
+import type { LectureNoteContent } from '@/types'
 
-const PHASES: SessionPhase[] = ['lobby', 'survey', 'dataset', 'analysis', 'ended']
+const NOTE_CATEGORIES = ['survey', 'dataset', 'analysis']
 
 export default function LectureNotesEditor() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const navigate = useNavigate()
 
-  const [selectedPhase, setSelectedPhase] = useState<SessionPhase>('survey')
+  const [selectedPhase, setSelectedPhase] = useState('survey')
   const [notes, setNotes] = useState<Record<string, LectureNoteContent>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -98,13 +98,13 @@ export default function LectureNotesEditor() {
             Lecture Notes
           </h1>
           <p className="text-sm" style={{ color: '#9090B0' }}>
-            Add notes per phase. Students see them in the side panel.
+            Add notes per section. Students see them in the side panel.
           </p>
         </div>
 
-        {/* Phase selector */}
+        {/* Section selector */}
         <div className="flex gap-2 mb-6 flex-wrap fade-in-up">
-          {PHASES.map((p) => (
+          {NOTE_CATEGORIES.map((p) => (
             <button
               key={p}
               onClick={() => setSelectedPhase(p)}

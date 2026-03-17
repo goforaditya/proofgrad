@@ -18,6 +18,7 @@ import SessionControl from '@/pages/instructor/SessionControl'
 import SurveyBuilder from '@/pages/instructor/SurveyBuilder'
 import LectureNotesEditor from '@/pages/instructor/LectureNotesEditor'
 import ArticleEditor from '@/pages/instructor/ArticleEditor'
+import ResourceManager from '@/pages/instructor/ResourceManager'
 
 // Student pages
 import JoinSession from '@/pages/student/JoinSession'
@@ -31,6 +32,9 @@ import CpiBuilder from '@/pages/student/CpiBuilder'
 // Blog
 import ArticleFeed from '@/pages/blog/ArticleFeed'
 import ArticleView from '@/pages/blog/ArticleView'
+
+// Resources
+import ResourcesPage from '@/pages/resources/ResourcesPage'
 
 export default function App() {
   return (
@@ -109,6 +113,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/instructor/resources"
+          element={
+            <ProtectedRoute role="instructor">
+              <ResourceManager />
+            </ProtectedRoute>
+          }
+        />
 
         {/* User/session routes (public — guests allowed) */}
         <Route path="/join" element={<JoinSession />} />
@@ -120,6 +132,9 @@ export default function App() {
         <Route path="/student/session/:sessionId/analysis" element={<AnalysisWorkspace />} />
         <Route path="/student/session/:sessionId/export" element={<PortfolioExport />} />
         <Route path="/student/session/:sessionId/cpi" element={<CpiBuilder />} />
+
+        {/* Resources (public) */}
+        <Route path="/resources" element={<ResourcesPage />} />
 
         {/* Blog (public) */}
         <Route path="/blog" element={<ArticleFeed />} />

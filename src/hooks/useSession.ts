@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
-import type { Session, SessionStudent, SessionPhase, GuestState } from '@/types'
+import type { Session, SessionStudent, GuestState } from '@/types'
 
 function generateJoinCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no ambiguous chars
@@ -165,15 +165,14 @@ export async function fetchSessionStudents(
 }
 
 /**
- * Advance session to the next phase (instructor only).
+ * Start a session (lobby → active).
  */
-export async function advancePhase(
-  sessionId: string,
-  newPhase: SessionPhase
+export async function startSession(
+  sessionId: string
 ): Promise<{ error: string | null }> {
   const { error } = await supabase
     .from('sessions')
-    .update({ phase: newPhase })
+    .update({ phase: 'active' })
     .eq('id', sessionId)
 
   if (error) return { error: error.message }

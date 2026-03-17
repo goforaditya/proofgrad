@@ -27,6 +27,10 @@ export default function CompleteProfile() {
       setError('Please select hostel or day scholar.')
       return
     }
+    if (!instagram.trim() && !linkedin.trim() && !snapchat.trim()) {
+      setError('Please add at least one social profile (Instagram, LinkedIn, or Snapchat).')
+      return
+    }
     setError(null)
     setLoading(true)
 
@@ -62,7 +66,7 @@ export default function CompleteProfile() {
         <div className="text-center mb-8">
           <h1 className="glow-text text-3xl font-bold">Proofgrad</h1>
           <p className="mt-2 text-sm" style={{ color: '#9090B0' }}>
-            Complete your profile to unlock PDF export
+            Complete your profile to unlock all features
           </p>
         </div>
 
@@ -71,7 +75,7 @@ export default function CompleteProfile() {
             Complete your profile
           </h2>
           <p className="text-sm mb-6" style={{ color: '#9090B0' }}>
-            This unlocks portfolio PDF export and group comparisons.
+            This unlocks PDF export, all resources, reactions, and comments. Add at least one social profile.
           </p>
 
           {error && (
@@ -131,9 +135,13 @@ export default function CompleteProfile() {
               </div>
             </div>
 
+            <p className="text-xs" style={{ color: '#9090B0' }}>
+              * Add at least one social profile below
+            </p>
+
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: '#9090B0' }}>
-                Instagram (optional)
+                Instagram *
               </label>
               <input
                 type="text"
@@ -146,7 +154,7 @@ export default function CompleteProfile() {
 
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: '#9090B0' }}>
-                LinkedIn (optional)
+                LinkedIn *
               </label>
               <input
                 type="text"
@@ -159,7 +167,7 @@ export default function CompleteProfile() {
 
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: '#9090B0' }}>
-                Snapchat (optional)
+                Snapchat *
               </label>
               <input
                 type="text"

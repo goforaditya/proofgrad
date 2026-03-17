@@ -1,12 +1,12 @@
 import { supabase } from '@/lib/supabase'
-import type { LectureNote, LectureNoteContent, SessionPhase } from '@/types'
+import type { LectureNote, LectureNoteContent } from '@/types'
 
 // -------------------------------------------------------
 // Fetch lecture note for a session + phase
 // -------------------------------------------------------
 export async function fetchLectureNote(
   sessionId: string,
-  phase: SessionPhase
+  phase: string
 ): Promise<{ note: LectureNote | null; error: string | null }> {
   const { data, error } = await supabase
     .from('lecture_notes')
@@ -39,7 +39,7 @@ export async function fetchAllLectureNotes(
 // -------------------------------------------------------
 export async function upsertLectureNote(
   sessionId: string,
-  phase: SessionPhase,
+  phase: string,
   content: LectureNoteContent
 ): Promise<{ error: string | null }> {
   const { error } = await supabase

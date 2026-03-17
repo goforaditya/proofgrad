@@ -4,7 +4,7 @@
 
 export type UserRole = 'student' | 'instructor'
 
-export type SessionPhase = 'lobby' | 'survey' | 'dataset' | 'analysis' | 'ended'
+export type SessionPhase = 'lobby' | 'active' | 'ended'
 
 export type SessionStatus = 'active' | 'ended'
 
@@ -98,7 +98,7 @@ export interface LectureNoteContent {
 export interface LectureNote {
   id: string
   session_id: string
-  phase: SessionPhase
+  phase: string // Decoupled from SessionPhase — used as note category (survey, dataset, analysis, etc.)
   content: LectureNoteContent
   created_at: string
 }
@@ -182,4 +182,39 @@ export interface CpiCategory {
   name: string
   weight: number // percentage, must sum to 100
   priceLevel?: number
+}
+
+// -------------------------------------------------------
+// Resource Links
+// -------------------------------------------------------
+
+export type ReactionEmoji = 'smile' | 'upvote' | 'poop'
+
+export interface ResourceLink {
+  id: string
+  instructor_id: string
+  title: string
+  url: string
+  description: string | null
+  niche: string
+  position: number
+  created_at: string
+}
+
+export interface LinkReaction {
+  id: string
+  link_id: string
+  user_id: string
+  emoji: ReactionEmoji
+  created_at: string
+}
+
+export interface LinkComment {
+  id: string
+  link_id: string
+  user_id: string
+  content: string
+  created_at: string
+  user_name?: string
+  user_role?: UserRole
 }

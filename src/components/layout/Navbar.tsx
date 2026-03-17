@@ -32,6 +32,13 @@ export default function Navbar() {
         >
           Blog
         </Link>
+        <Link
+          to="/resources"
+          className="text-sm transition-colors hover:text-[#F0F0F7]"
+          style={{ color: '#9090B0' }}
+        >
+          Resources
+        </Link>
         {user?.role === 'instructor' && (
           <Link
             to="/instructor/dashboard"
@@ -105,6 +112,14 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
           >
             Blog
+          </Link>
+          <Link
+            to="/resources"
+            className="text-sm py-2"
+            style={{ color: '#9090B0' }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Resources
           </Link>
           {user?.role === 'instructor' && (
             <Link

@@ -2,16 +2,39 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/lib/auth'
 import { fetchArticles } from '@/hooks/useArticles'
-import type { Article } from '@/types'
+import { fetchResourceLinks } from '@/hooks/useResources'
+import type { Article, ResourceLink } from '@/types'
+
+const NICHE_COLORS: Record<string, { bg: string; text: string; activeBg: string }> = {}
+const COLOR_PALETTE = [
+  { bg: 'rgba(232, 68, 122, 0.12)', text: '#FF6BA8', activeBg: 'linear-gradient(135deg, #E8447A, #C42E60)' },
+  { bg: 'rgba(99, 91, 255, 0.12)', text: '#A5B4FC', activeBg: 'linear-gradient(135deg, #635BFF, #4F46E5)' },
+  { bg: 'rgba(52, 211, 153, 0.12)', text: '#6EE7B7', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
+  { bg: 'rgba(251, 191, 36, 0.12)', text: '#FCD34D', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
+  { bg: 'rgba(96, 165, 250, 0.12)', text: '#93C5FD', activeBg: 'linear-gradient(135deg, #3B82F6, #2563EB)' },
+  { bg: 'rgba(244, 114, 182, 0.12)', text: '#F9A8D4', activeBg: 'linear-gradient(135deg, #EC4899, #DB2777)' },
+  { bg: 'rgba(167, 139, 250, 0.12)', text: '#C4B5FD', activeBg: 'linear-gradient(135deg, #8B5CF6, #7C3AED)' },
+]
+
+function getNicheColor(niche: string) {
+  if (!NICHE_COLORS[niche]) {
+    const idx = Object.keys(NICHE_COLORS).length % COLOR_PALETTE.length
+    NICHE_COLORS[niche] = COLOR_PALETTE[idx]
+  }
+  return NICHE_COLORS[niche]
+}
 
 export default function LandingPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [articles, setArticles] = useState<Article[]>([])
   const [search, setSearch] = useState('')
+  const [resources, setResources] = useState<ResourceLink[]>([])
+  const [activeNiche, setActiveNiche] = useState<string | null>(null)
 
   useEffect(() => {
     fetchArticles().then(setArticles)
+    fetchResourceLinks().then(setResources)
   }, [])
 
   const dashboardPath =
@@ -29,6 +52,15 @@ export default function LandingPage() {
     return Math.max(1, Math.ceil(content.split(/\s+/).filter(Boolean).length / 200))
   }
 
+  const resourceNiches = useMemo(() => [...new Set(resources.map((r) => r.niche))], [resources])
+
+  const filteredResources = useMemo(() => {
+    const list = activeNiche ? resources.filter((r) => r.niche === activeNiche) : resources
+    // Non-signed-in or non-profile-completed users see only first 2
+    const isUnlocked = user?.profile_completed
+    return { visible: isUnlocked ? list : list.slice(0, 2), hiddenCount: isUnlocked ? 0 : Math.max(0, list.length - 2) }
+  }, [resources, activeNiche, user])
+
   return (
     <div className="liquid-bg min-h-screen">
       <div className="liquid-orb-3" />
@@ -45,6 +77,13 @@ export default function LandingPage() {
             style={{ color: '#9090B0' }}
           >
             Blog
+          </Link>
+          <Link
+            to="/resources"
+            className="text-sm transition-colors hover:text-[#F0F0F7]"
+            style={{ color: '#9090B0' }}
+          >
+            Resources
           </Link>
           {user ? (
             <button
@@ -232,12 +271,115 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Resources section */}
+      {resources.length > 0 && (
+        <section className="px-4 sm:px-6 pb-16 max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div className="section-label">Resources</div>
+            <Link
+              to="/resources"
+              className="text-xs transition-colors hover:text-[#818CF8]"
+              style={{ color: '#635BFF' }}
+            >
+              View all →
+            </Link>
+          </div>
+
+          {/* Colourful niche filter pills */}
+          {resourceNiches.length > 1 && (
+            <div className="flex flex-wrap gap-2 mb-5 fade-in-up">
+              <button
+                onClick={() => setActiveNiche(null)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                style={{
+                  background: !activeNiche ? 'linear-gradient(135deg, #635BFF, #4F46E5)' : 'rgba(46, 46, 69, 0.5)',
+                  color: !activeNiche ? '#fff' : '#9090B0',
+                  border: !activeNiche ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                }}
+              >
+                All
+              </button>
+              {resourceNiches.map((niche) => {
+                const c = getNicheColor(niche)
+                const isActive = activeNiche === niche
+                return (
+                  <button
+                    key={niche}
+                    onClick={() => setActiveNiche(isActive ? null : niche)}
+                    className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                    style={{
+                      background: isActive ? c.activeBg : c.bg,
+                      color: isActive ? '#fff' : c.text,
+                      border: isActive ? 'none' : `1px solid ${c.text}22`,
+                    }}
+                  >
+                    {niche}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Resource link cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {filteredResources.visible.map((link) => {
+              const c = getNicheColor(link.niche)
+              return (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-card p-4 block fade-in-up hover:border-[rgba(99,91,255,0.2)] transition-all"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="text-sm font-semibold line-clamp-1" style={{ color: '#A5B4FC' }}>
+                      {link.title} ↗
+                    </h4>
+                    <span
+                      className="text-[10px] px-2 py-0.5 rounded-full flex-shrink-0"
+                      style={{ background: c.bg, color: c.text }}
+                    >
+                      {link.niche}
+                    </span>
+                  </div>
+                  {link.description && (
+                    <p className="text-xs mt-1.5 line-clamp-2" style={{ color: '#9090B0' }}>
+                      {link.description}
+                    </p>
+                  )}
+                </a>
+              )
+            })}
+          </div>
+
+          {/* Gate CTA */}
+          {filteredResources.hiddenCount > 0 && (
+            <div
+              className="glass-strong p-5 mt-4 text-center fade-in-up"
+              style={{ border: '1px solid rgba(99, 91, 255, 0.15)' }}
+            >
+              <p className="text-sm mb-3" style={{ color: '#9090B0' }}>
+                🔒 {filteredResources.hiddenCount} more resource{filteredResources.hiddenCount > 1 ? 's' : ''} — {user ? 'complete your profile' : 'sign in'} to unlock all.
+              </p>
+              <Link
+                to={user ? '/auth/complete-profile' : '/auth/login'}
+                className="btn-liquid px-5 py-2 text-sm inline-block"
+              >
+                {user ? 'Complete profile' : 'Sign in to unlock'}
+              </Link>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Footer */}
       <footer className="border-t px-4 sm:px-6 py-6" style={{ borderColor: '#2E2E45' }}>
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <span className="glow-text text-sm font-bold">Proofgrad</span>
           <div className="flex gap-6 text-xs" style={{ color: '#9090B0' }}>
             <Link to="/blog" className="hover:text-[#F0F0F7] transition-colors">Blog</Link>
+            <Link to="/resources" className="hover:text-[#F0F0F7] transition-colors">Resources</Link>
             <Link to="/auth/login" className="hover:text-[#F0F0F7] transition-colors">Sign in</Link>
             <Link to="/auth/signup" className="hover:text-[#F0F0F7] transition-colors">Sign up</Link>
           </div>

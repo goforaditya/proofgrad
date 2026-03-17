@@ -5,23 +5,7 @@ import { useAuth } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 import { fetchSessionById } from '@/hooks/useSession'
 import { subscribeToSession } from '@/lib/realtime'
-import type { Session, SessionPhase } from '@/types'
-
-const PHASE_LABELS: Record<SessionPhase, string> = {
-  lobby: 'Waiting for instructor…',
-  survey: 'Survey is live!',
-  dataset: 'Dataset released',
-  analysis: 'Analysis time',
-  ended: 'Session ended',
-}
-
-const PHASE_DESCRIPTIONS: Record<SessionPhase, string> = {
-  lobby: 'The instructor will start the session soon. Hang tight!',
-  survey: 'Fill out the survey before it closes.',
-  dataset: 'The anonymised dataset is now available for viewing.',
-  analysis: 'Build charts and explore the data with AI-powered tools.',
-  ended: 'This session has concluded. Thank you for participating!',
-}
+import type { Session } from '@/types'
 
 export default function SessionView() {
   const { sessionId } = useParams<{ sessionId: string }>()
@@ -35,6 +19,7 @@ export default function SessionView() {
   // Profile nudge modal state
   const [showProfileNudge, setShowProfileNudge] = useState(false)
   const [profileSaving, setProfileSaving] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
   const [snapchat, setSnapchat] = useState(user?.snapchat ?? '')
   const [instagram, setInstagram] = useState(user?.instagram ?? '')
   const [linkedin, setLinkedin] = useState(user?.linkedin ?? '')
@@ -81,6 +66,12 @@ export default function SessionView() {
 
   async function handleProfileSave() {
     if (!user) return
+    // Require at least one social field
+    if (!snapchat.trim() && !instagram.trim() && !linkedin.trim()) {
+      setProfileError('Please add at least one social profile to complete your profile.')
+      return
+    }
+    setProfileError(null)
     setProfileSaving(true)
     await supabase
       .from('users')
@@ -134,8 +125,8 @@ export default function SessionView() {
             <h1 className="text-lg font-bold" style={{ color: '#F0F0F7' }}>
               {session.title}
             </h1>
-            <span className={phase === 'ended' ? 'badge-muted' : 'badge-glow'}>
-              {phase.charAt(0).toUpperCase() + phase.slice(1)}
+            <span className={phase === 'ended' ? 'badge-muted' : phase === 'active' ? 'badge-glow' : 'badge-muted'}>
+              {phase === 'active' ? 'Live' : phase.charAt(0).toUpperCase() + phase.slice(1)}
             </span>
           </div>
 
@@ -149,66 +140,71 @@ export default function SessionView() {
           </div>
         </div>
 
-        {/* Phase status card */}
+        {/* Phase content */}
         <div className="glass p-8 text-center">
-          {/* Phase indicator */}
-          <div className="flex justify-center gap-1.5 mb-6">
-            {(['lobby', 'survey', 'dataset', 'analysis'] as SessionPhase[]).map((p) => {
-              const phases: SessionPhase[] = ['lobby', 'survey', 'dataset', 'analysis']
-              const pi = phases.indexOf(p)
-              const ci = phases.indexOf(phase === 'ended' ? 'analysis' : phase)
-              const isActive = p === phase
-              const isPast = pi < ci || phase === 'ended'
-              return (
-                <div
-                  key={p}
-                  className={`phase-dot h-1.5 flex-1 max-w-12 ${
-                    isActive ? 'active' : isPast ? 'past' : 'future'
-                  }`}
-                />
-              )
-            })}
-          </div>
-
-          <h2 className="text-xl font-bold mb-2" style={{ color: '#F0F0F7' }}>
-            {PHASE_LABELS[phase]}
-          </h2>
-          <p className="text-sm" style={{ color: '#9090B0' }}>
-            {PHASE_DESCRIPTIONS[phase]}
-          </p>
-
-          {/* Phase-specific actions */}
           {phase === 'lobby' && (
-            <div className="mt-8 lobby-pulse" style={{ height: 80 }} />
+            <>
+              <h2 className="text-xl font-bold mb-2" style={{ color: '#F0F0F7' }}>
+                Waiting for instructor…
+              </h2>
+              <p className="text-sm" style={{ color: '#9090B0' }}>
+                The instructor will start the session soon. Hang tight!
+              </p>
+              <div className="mt-8 lobby-pulse" style={{ height: 80 }} />
+            </>
           )}
 
-          {phase === 'survey' && (
-            <button
-              className="btn-liquid mt-6 px-6 py-2.5"
-              onClick={() => navigate(`/student/session/${sessionId}/survey`)}
-            >
-              Open survey →
-            </button>
-          )}
+          {phase === 'active' && (
+            <>
+              <h2 className="text-xl font-bold mb-2" style={{ color: '#F0F0F7' }}>
+                Session is live! 🚀
+              </h2>
+              <p className="text-sm mb-6" style={{ color: '#9090B0' }}>
+                Survey, dataset, and analysis are all available. Jump into any activity.
+              </p>
 
-          {phase === 'dataset' && (
-            <button
-              className="btn-liquid mt-6 px-6 py-2.5"
-              onClick={() => navigate(`/student/session/${sessionId}/dataset`)}
-            >
-              View dataset →
-            </button>
-          )}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                <button
+                  onClick={() => navigate(`/student/session/${sessionId}/survey`)}
+                  className="glass p-4 rounded-xl hover:bg-white/5 transition-all text-left"
+                >
+                  <div className="text-2xl mb-2">📋</div>
+                  <div className="text-sm font-semibold mb-1" style={{ color: '#F0F0F7' }}>
+                    Survey
+                  </div>
+                  <div className="text-xs" style={{ color: '#9090B0' }}>
+                    Fill out the live survey
+                  </div>
+                </button>
 
-          {phase === 'analysis' && (
-            <div className="flex flex-col gap-3 mt-6">
-              <button
-                className="btn-liquid px-6 py-2.5"
-                onClick={() => navigate(`/student/session/${sessionId}/analysis`)}
-              >
-                Open workspace →
-              </button>
-              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => navigate(`/student/session/${sessionId}/dataset`)}
+                  className="glass p-4 rounded-xl hover:bg-white/5 transition-all text-left"
+                >
+                  <div className="text-2xl mb-2">📊</div>
+                  <div className="text-sm font-semibold mb-1" style={{ color: '#F0F0F7' }}>
+                    Dataset
+                  </div>
+                  <div className="text-xs" style={{ color: '#9090B0' }}>
+                    View live responses
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => navigate(`/student/session/${sessionId}/analysis`)}
+                  className="glass p-4 rounded-xl hover:bg-white/5 transition-all text-left"
+                >
+                  <div className="text-2xl mb-2">✨</div>
+                  <div className="text-sm font-semibold mb-1" style={{ color: '#F0F0F7' }}>
+                    Analysis
+                  </div>
+                  <div className="text-xs" style={{ color: '#9090B0' }}>
+                    Charts & AI insights
+                  </div>
+                </button>
+              </div>
+
+              <div className="flex gap-2 justify-center mt-4">
                 <button
                   className="btn-ghost px-4 py-2 text-xs"
                   onClick={() => navigate(`/student/session/${sessionId}/cpi`)}
@@ -222,32 +218,40 @@ export default function SessionView() {
                   📄 Export portfolio
                 </button>
               </div>
-            </div>
+            </>
           )}
 
           {phase === 'ended' && (
-            <div className="flex flex-col gap-3 mt-6">
-              <button
-                className="btn-ghost px-6 py-2.5"
-                onClick={() => navigate(`/student/session/${sessionId}/export`)}
-              >
-                📄 Export portfolio
-              </button>
-              <button
-                onClick={() => navigate('/join')}
-                className="btn-ghost px-6 py-2.5"
-              >
-                Join another session
-              </button>
-              {!user && (
+            <>
+              <h2 className="text-xl font-bold mb-2" style={{ color: '#F0F0F7' }}>
+                Session ended
+              </h2>
+              <p className="text-sm mb-6" style={{ color: '#9090B0' }}>
+                This session has concluded. Thank you for participating!
+              </p>
+              <div className="flex flex-col gap-3">
                 <button
-                  onClick={() => navigate(`/auth/signup?redirect=session&session=${sessionId}`)}
-                  className="btn-liquid px-6 py-2.5 mt-2"
+                  className="btn-ghost px-6 py-2.5"
+                  onClick={() => navigate(`/student/session/${sessionId}/export`)}
                 >
-                  Create account to save your work
+                  📄 Export portfolio
                 </button>
-              )}
-            </div>
+                <button
+                  onClick={() => navigate('/join')}
+                  className="btn-ghost px-6 py-2.5"
+                >
+                  Join another session
+                </button>
+                {!user && (
+                  <button
+                    onClick={() => navigate(`/auth/signup?redirect=session&session=${sessionId}`)}
+                    className="btn-liquid px-6 py-2.5 mt-2"
+                  >
+                    Create account to save your work
+                  </button>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -266,9 +270,15 @@ export default function SessionView() {
               </h2>
               <p className="text-sm" style={{ color: '#9090B0' }}>
                 Complete your profile to unlock PDF exports, connect with peers,
-                and get personalized insights.
+                and get personalized insights. Add at least one social profile.
               </p>
             </div>
+
+            {profileError && (
+              <div className="alert-error mb-4 px-4 py-3 text-sm">
+                {profileError}
+              </div>
+            )}
 
             <div className="space-y-3 mb-6">
               <div>

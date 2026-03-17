@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { fetchLectureNote } from '@/hooks/useLectureNotes'
-import type { LectureNote, SessionPhase } from '@/types'
+import type { LectureNote } from '@/types'
 
 interface Props {
   sessionId: string
-  phase: SessionPhase
+  phase: string
 }
 
 export default function LectureNotesPanel({ sessionId, phase }: Props) {
