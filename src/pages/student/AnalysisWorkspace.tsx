@@ -44,7 +44,7 @@ export default function AnalysisWorkspace() {
   const { sessionId } = useParams<{ sessionId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, guestState } = useAuth()
+  const { user, guestState, loading: authLoading } = useAuth()
 
   const isInstructor = location.pathname.startsWith('/instructor/')
   const basePath = isInstructor
@@ -64,14 +64,9 @@ export default function AnalysisWorkspace() {
   const [customY, setCustomY] = useState('')
 
   // CTA gate: require signup for analysis (skip for instructors)
-  const isGuest = !user && !!guestState
-  const [showCTA, setShowCTA] = useState(false)
-
-  useEffect(() => {
-    if (isGuest && !isInstructor) {
-      setShowCTA(true)
-    }
-  }, [isGuest, isInstructor])
+  // Don't show while auth is still loading; dismiss once user is resolved
+  const isGuest = !authLoading && !user && !!guestState
+  const showCTA = isGuest && !isInstructor
 
   const loadData = useCallback(async () => {
     if (!sessionId) return
