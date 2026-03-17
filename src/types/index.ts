@@ -10,7 +10,7 @@ export type SessionStatus = 'active' | 'ended'
 
 export type Accommodation = 'hostel' | 'day_scholar'
 
-export type QuestionType = 'number' | 'slider' | 'mcq' | 'scale' | 'screenshot'
+export type QuestionType = 'number' | 'slider' | 'mcq' | 'scale' | 'screenshot' | 'time' | 'text'
 
 // -------------------------------------------------------
 // Database row types
@@ -63,6 +63,10 @@ export interface SurveyQuestion {
   // For screenshot upload
   placeholder?: string
   required?: boolean
+  // Help text shown below the question
+  helpText?: string
+  // Section header (displayed as a divider above this question)
+  section?: string
 }
 
 export interface Survey {

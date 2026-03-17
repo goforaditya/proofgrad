@@ -98,13 +98,29 @@ export default function SessionControl() {
   // Survey state
   const [surveys, setSurveys] = useState<Survey[]>([])
   const [showBuilder, setShowBuilder] = useState(false)
-  const [surveyTitle, setSurveyTitle] = useState('Screen Time Survey')
+  const [surveyTitle, setSurveyTitle] = useState('Screen Time & Attention Economy Survey')
   const [questions, setQuestions] = useState<SurveyQuestion[]>([
-    { type: 'number', label: 'How many hours of screen time did you have yesterday?' },
-    { type: 'slider', label: 'Rate your sleep quality (0-100)', min: 0, max: 100, step: 1 },
-    { type: 'mcq', label: 'What is your primary social media platform?', options: ['Instagram', 'YouTube', 'WhatsApp', 'X (Twitter)', 'Other'] },
-    { type: 'scale', label: 'How productive were you yesterday?', min: 1, max: 10 },
-    { type: 'screenshot', label: 'Upload your screen time screenshot' },
+    // Section 1: Demographics
+    { type: 'number', label: 'Age', helpText: 'Enter your age in years (e.g., 20).', min: 16, max: 30, section: 'Demographics & Human Capital Constraints' },
+    { type: 'mcq', label: 'Gender at Birth', options: ['Female', 'Male', 'Prefer not to say'] },
+    { type: 'mcq', label: 'Current Semester', options: ['1st', '2nd', '3rd', '4th', '5th', '6th'] },
+    { type: 'mcq', label: 'Living Situation', options: ['Hostel Resident', 'Day Scholar (Commuter)'] },
+    { type: 'number', label: 'Current CGPA', helpText: 'Enter your current CGPA on a 10-point scale (e.g., 8.2).', min: 0, max: 10, step: 0.1 },
+    { type: 'number', label: 'Average Nightly Sleep (hours)', helpText: 'On average, how many hours do you sleep per night? Use decimals if needed (e.g., 6.5).', min: 2, max: 14, step: 0.5 },
+    // Section 2: Attention Economy
+    { type: 'mcq', label: 'Primary Device Operating System', options: ['iOS (iPhone)', 'Android', 'Other'], section: 'The Attention Economy (Device Analytics)' },
+    { type: 'time', label: 'Total Screen Time Yesterday', helpText: "Open your phone's Screen Time (iOS) or Digital Wellbeing (Android) and enter your total screen time for yesterday." },
+    { type: 'number', label: 'Total Device Pickups / Times Unlocked', helpText: 'How many times did you pick up or unlock your phone yesterday?', min: 0 },
+    { type: 'number', label: 'Total Notifications Received', helpText: 'How many total notifications did you receive yesterday?', min: 0 },
+    // Section 3: App-Level Utility
+    { type: 'text', label: 'Top App #1 (Most Used)', helpText: 'Name of the app (e.g., Instagram, YouTube, WhatsApp).', section: 'App-Level Utility' },
+    { type: 'number', label: 'Time Spent on Top App #1 (minutes)', helpText: 'Convert the time to total minutes (e.g., 1 hour 15 mins = 75).', min: 0 },
+    { type: 'text', label: 'Top App #2', helpText: 'Name of the second most used app.' },
+    { type: 'number', label: 'Time Spent on Top App #2 (minutes)', min: 0 },
+    { type: 'text', label: 'Top App #3', helpText: 'Name of the third most used app.' },
+    { type: 'number', label: 'Time Spent on Top App #3 (minutes)', min: 0 },
+    { type: 'text', label: 'Top App #4', helpText: 'Name of the fourth most used app.' },
+    { type: 'number', label: 'Time Spent on Top App #4 (minutes)', min: 0 },
   ])
   const [creating, setCreating] = useState(false)
   const [activeSurvey, setActiveSurvey] = useState<Survey | null>(null)

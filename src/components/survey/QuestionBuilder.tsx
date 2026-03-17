@@ -3,6 +3,8 @@ import type { SurveyQuestion, QuestionType } from '@/types'
 
 const QUESTION_TYPES: { value: QuestionType; label: string; icon: string }[] = [
   { value: 'number', label: 'Number', icon: '#' },
+  { value: 'text', label: 'Short Text', icon: 'Aa' },
+  { value: 'time', label: 'Time (h + m)', icon: '⏱' },
   { value: 'slider', label: 'Slider', icon: '◐' },
   { value: 'mcq', label: 'Multiple Choice', icon: '◉' },
   { value: 'scale', label: 'Scale (1–10)', icon: '★' },
@@ -207,11 +209,47 @@ export default function QuestionBuilder({
         </div>
       )}
 
+      {question.type === 'text' && (
+        <p className="text-xs" style={{ color: '#9090B0' }}>
+          Students will type a short free-text answer (e.g. app name).
+        </p>
+      )}
+
+      {question.type === 'time' && (
+        <p className="text-xs" style={{ color: '#9090B0' }}>
+          Students pick hours + minutes. Stored as total minutes in the dataset.
+        </p>
+      )}
+
       {question.type === 'screenshot' && (
         <p className="text-xs" style={{ color: '#9090B0' }}>
           Students will upload a screenshot. OCR will extract screen time data automatically.
         </p>
       )}
+
+      {/* Help text */}
+      <div className="mt-3">
+        <input
+          type="text"
+          value={question.helpText ?? ''}
+          onChange={(e) => updateField('helpText', e.target.value || undefined)}
+          placeholder="Help text (optional) — shown below the question"
+          className="glass-input w-full px-3 py-2 text-xs"
+          style={{ opacity: 0.7 }}
+        />
+      </div>
+
+      {/* Section header */}
+      <div className="mt-2">
+        <input
+          type="text"
+          value={question.section ?? ''}
+          onChange={(e) => updateField('section', e.target.value || undefined)}
+          placeholder="Section header (optional) — shown as divider above this question"
+          className="glass-input w-full px-3 py-2 text-xs"
+          style={{ opacity: 0.7 }}
+        />
+      </div>
     </div>
   )
 }
