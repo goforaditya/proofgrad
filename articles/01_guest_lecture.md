@@ -112,7 +112,11 @@ Another fun way for students to collect data can be through sureveys. They are t
 
 One option is using [Proofgrad](https://www.proofgrad.com/). Which I will use today as it actually anonymizes data and helps me perform analytics directly.
 
+
+## Toolset
 ![alt text](proofgrad-hero.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 
 
 <br/>
@@ -139,6 +143,7 @@ To prove that data analytics is about real human behavior. We are going to analy
 
 ### 1: The Setup & QR Code
 **Action:** *Put the QR code on the projector.*
+
 
 **Data Collection:**
 > Alright, time to put your data where your mouth is. Everyone, take out your phones and scan the QR code on the screen. 

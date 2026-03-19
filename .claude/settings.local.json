@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun create:*)",
+      "Bash(bun add:*)",
+      "Bash(bunx tsc:*)",
+      "Bash(timeout 15 bun run dev)",
+      "Bash(gh repo:*)",
+      "Bash(where gh:*)",
+      "Bash(bun run:*)",
+      "Bash(find /c/MLCODE/research/proofgrad/src -type f \\\\\\(-name *.tsx -o -name *.ts \\\\\\))",
+      "Bash(npx tsc:*)",
+      "Bash(bunx vercel:*)",
+      "Bash(find /c/MLCODE/research/proofgrad -type f \\\\\\(-name *.sql -o -path */supabase/migrations* \\\\\\))"
+    ]
+  }
+}
