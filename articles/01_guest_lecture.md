@@ -28,8 +28,8 @@ Instructor Activates > Open surveys
 
 We were both past Data Analytics students who turned into Data Scientists and then recently AI Engineers. Both have 6+ YOE. We have experience of handling "big data" (for e.g. think all UPI transactions made by cutomers of any big indian bank. Such data can run into PetaBytes). And we were tasked with extracting useful insights from such raw information.
 
-![alt text](mylinkedin.png)
-![alt text](jagdishlinkedin.png)
+![alt text](https://raw.githubusercontent.com/goforaditya/proofgrad/refs/heads/docs/lecture-notes/articles/mylinkedin.png)
+![alt text](https://raw.githubusercontent.com/goforaditya/proofgrad/refs/heads/docs/lecture-notes/articles/jagdishlinkedin.png)
 
 <br/>
 <br/>
@@ -120,9 +120,9 @@ One option is using [Proofgrad](https://www.proofgrad.com/). Which I will use to
 
 
 ## Toolset
-![alt text](proofgrad-hero.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
+![alt text](https://raw.githubusercontent.com/goforaditya/proofgrad/refs/heads/docs/lecture-notes/articles/proofgrad-hero.png)
+![alt text](https://raw.githubusercontent.com/goforaditya/proofgrad/refs/heads/docs/lecture-notes/articles/image-1.png)
+![alt text](https://raw.githubusercontent.com/goforaditya/proofgrad/refs/heads/docs/lecture-notes/articles/image-2.png)
 
 
 <br/>
@@ -139,21 +139,14 @@ One option is using [Proofgrad](https://www.proofgrad.com/). Which I will use to
 
 To prove that data analytics is about real human behavior. We are going to analyze the most interesting dataset in this room: **YOU**.
 
-> Get a volunteer form audience
->
-> Put your hands up if your name starts with B /M/R
->
-> Come to stage and let's fill your data
->
-> Now guide everyone on how to do this.
 
-### 1: The Setup & QR Code
-**Action:** *Put the QR code on the projector.*
+
+### 1: Screen Time Data & Stats
+
+<img width="1758" height="350" alt="image" src="https://github.com/user-attachments/assets/6d6a744c-702f-4758-bdc8-fc813a30bde9" />
 
 
 **Data Collection:**
-> Alright, time to put your data where your mouth is. Everyone, take out your phones and scan the QR code on the screen. 
->
 > As data scientists, we don't care about individual data points. We care about the aggregate market behavior.
 
 
@@ -163,16 +156,6 @@ To prove that data analytics is about real human behavior. We are going to analy
 >
 > Next, drop in your current CGPA and your average nightly sleep. Be honest. We are going to use this to test the opportunity cost.
 
-### 3: Guiding Section 2 (The Attention Budget)
-**Action:** *How to find the hidden device data.*
-
-> "Now for the real evidence. Go to your phone's settings. If you are on an iPhone, hit 'Screen Time'. If you are on Android, go to 'Digital Wellbeing'. Look at your stats specifically for **yesterday**.
->
-> Enter your total hours and minutes. That is your total 'Attention Budget' for the day. 
->
-> Scroll down and find your 'Total Pickups' or 'Times Unlocked', and your 'Total Notifications'. 
-
-We are about to test a major behavioral concept: Are you consuming digital content because of internal utility—meaning *you* decided to pick up the phone—or because of external market triggers pushing notifications to you? Let's see who is actually in control."
 
 ### 4: Raw Data and Analysis
 **Action:** *Transition to presentor screen.*
@@ -181,11 +164,11 @@ We are about to test a major behavioral concept: Are you consuming digital conte
 >
 > Jagdish and I are now going to open up pG portal, pull this raw CSV into Python, and do some live data cleaning. Let’s see what the market reality of this classroom actually looks like."
 
-**Cleaning:** *Open PG and show the collected data.* "Look at this raw CSV. This is the reality of the job."
 
 ### Analyze basics on PG 
 ### Run Analysis on Excel-Claude
 
+<img width="957" height="659" alt="image" src="https://github.com/user-attachments/assets/06be3208-3d7f-44ee-9cbf-48b60f391360" />
 
 ### 5: Telling a Story
 
@@ -194,12 +177,15 @@ We are about to test a major behavioral concept: Are you consuming digital conte
 Now that we have the data flowing in, let's do what data professionals call "Exploratory Data Analysis" (EDA). Before we build complex models, we need to understand the baseline of our ecosystem. 
 
 * **The Attention Baseline:** What is the average screen time of a Manipal Economics student? 
+<img width="1103" height="606" alt="image" src="https://github.com/user-attachments/assets/f1736c4a-14a7-4c8f-aff7-6f224cb74cd1" />
 
 * **The Push vs. Pull Market:** We can plot *Notifications Received* against *Device Pickups*. Are you opening your phone because an app pinged you (external market trigger), or are you opening it purely out of habit (internal utility)? 
+<img width="762" height="588" alt="image" src="https://github.com/user-attachments/assets/fb7c970f-ddc7-462a-b253-3de1539b4fb6" />
 
-* **The Lorenz Curve:** "Let's plot your screen time."  "Notice the curve? Attention isn't distributed equally. A small percentage of you are hoarding the majority of the digital consumption."
 
 * **The Commuter Tax:** "Let's group the data by 'Hostel vs. Day Scholar'. Commuters have a physical time tax. The boxplots show us exactly how that physical constraint alters your digital utility."
+
+<img width="760" height="505" alt="image" src="https://github.com/user-attachments/assets/356dac25-106b-4391-8ea3-cfe009770789" />
 
 
 ## Try to fit some hypothesis and models
@@ -218,9 +204,8 @@ A careless data analyst stops at the first correlation. A great data analyst loo
 
 Remember, correlation does not equal causation. If we see a negative trend between screen time and grades, we have to ask: is the screen time *causing* the lower grades, or is there a hidden factor? 
 
-Let's introduce **Sleep** into our model. 
+<img width="769" height="508" alt="image" src="https://github.com/user-attachments/assets/acec9444-e2a8-4443-aa42-5bb837cac4d1" />
 
-Often, we find that it isn't the screen time directly hurting the GPA. Instead, excessive screen time destroys sleep quality, and the *lack of sleep* is the biological constraint that tanks academic performance. This is called "Omitted Variable Bias," and identifying it is why human analysts are still more valuable than automated charts.
 
 <br/>
 <br/>
@@ -281,10 +266,8 @@ If you want to start building this skillset, here is where I recommend you look:
 ## Q&A and Proofgrad Insider Access
 
 ### Instagram:
-![alt text](jaggijinsta.png)
+![alt text]([jaggijinsta.png](https://raw.githubusercontent.com/goforaditya/proofgrad/refs/heads/docs/lecture-notes/articles/jaggijinsta.png))
 
 ### Snap -> **jaggi_j**
 
 ### LinkedIn https://www.linkedin.com/in/jagdish-singh/
-
-### WP +919660571934
