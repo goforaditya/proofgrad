@@ -8,7 +8,13 @@ Hi I am Aditya and with me is Jagdish and today we are here to provide a guest l
 This is going to be a very interactive session with live polls so I hope all of you have your phones or laptop (any one is fine) with a working internet connection.
 
 *Trigger Setup Survey*
- > Can your hear and see the Speaker ? and some warm up questions.
+![alt text](image-3.png)
+
+Join Session
+![alt text](image-7.png)
+
+Instructor Activates > Open surveys
+![alt text](image-6.png)
  
 <br/>
 <br/>
