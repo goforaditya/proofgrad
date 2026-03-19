@@ -177,6 +177,9 @@ We are about to test a major behavioral concept: Are you consuming digital conte
 
 **Cleaning:** *Open PG and show the collected data.* "Look at this raw CSV. This is the reality of the job."
 
+### Analyze basics on PG 
+### Run Analysis on Excel-Claude
+
 
 ### 5: Telling a Story
 
